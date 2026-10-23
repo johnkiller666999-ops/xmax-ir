@@ -509,7 +509,7 @@ html:not([lang="en"]) .lnote{display:block}
 <script>
 (function(){
 /* ===== CONFIG: when the site runs on the company domain with the data worker, these endpoints return live data ===== */
-var API={filings:'/api/filings.json',quote:'/api/quote.json'};
+var API={filings:'/api/filings',quote:'/api/quote'};var F0=null;
 
 var RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
 var $=function(s){return document.querySelector(s)},$$=function(s){return [].slice.call(document.querySelectorAll(s))};
@@ -757,7 +757,7 @@ addEventListener('scroll',sc,{passive:true});tb.onclick=function(){scrollTo({top
 /* ===== live data (works when deployed with the data worker on the company domain) ===== */
 function getJSON(u){return new Promise(function(res){try{var c=new AbortController(),tmo=setTimeout(function(){c.abort()},6000);fetch(u,{cache:'no-store',signal:c.signal}).then(function(r){clearTimeout(tmo);return r.ok?r.json():null}).then(res).catch(function(){res(null)})}catch(e){res(null)}})}
 function loadLive(){
-getJSON(API.filings).then(function(j){if(!j||!j.data||!j.data.length)return;F=j.data.map(function(x){return [x.date,x.form,x.desc||x.form,x.period||'',x.url||'']});rf();var tg=$('#fsrc');tg.innerHTML='<span class="dot open"></span>LIVE · SEC EDGAR';});
+getJSON(API.filings).then(function(j){if(!j||!j.data||!j.data.length)return;if(!F0)F0=F.slice();var mp={};F0.forEach(function(r){if(r[2]!=='Current report')mp[r[0]+'|'+r[1]]=r[2]});F=j.data.map(function(x){return [x.date,x.form,mp[x.date+'|'+x.form]||x.desc||x.form,x.period||'',x.url||'']});rf();var tg=$('#fsrc');tg.innerHTML='<span class="dot open"></span>LIVE · SEC EDGAR';});
 getJSON(API.quote).then(function(j){var d=j&&j.data;if(!d||typeof d.price!=='number')return;
 $$('.px').forEach(function(e){e.textContent='$'+d.price.toFixed(2);e.classList.add('live')});
 $$('.pxc').forEach(function(e){var up=d.change>=0;e.textContent=(up?'+':'')+d.change.toFixed(2)+' ('+(up?'+':'')+d.changePct.toFixed(2)+'%)';e.className='chg pxc '+(up?'pos':'neg')});
