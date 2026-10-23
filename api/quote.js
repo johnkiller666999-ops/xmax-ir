@@ -7,13 +7,19 @@
 const SYMBOL = 'XMAX';
 
 module.exports = async (req, res) => {
+  const fail = (reason, status = 503) => {
+    res.setHeader('Cache-Control', 'no-store');
+    res.status(status).json({ error: 'unavailable', reason });
+  };
+  const key = (process.env.QUOTE_API_KEY || '').trim();
+  if (!key) return fail('missing_key: QUOTE_API_KEY is not set in Vercel, or the project was not redeployed after adding it');
   try {
-    const key = process.env.QUOTE_API_KEY;
-    if (!key) throw new Error('No API key');
-    const r = await fetch(`https://finnhub.io/api/v1/quote?symbol=${SYMBOL}&token=${key}`);
-    if (!r.ok) throw new Error('Quote ' + r.status);
+    const r = await fetch(`https://finnhub.io/api/v1/quote?symbol=${SYMBOL}&token=${encodeURIComponent(key)}`);
+    if (r.status === 401 || r.status === 403) return fail('invalid_key: the provider rejected the API key (' + r.status + ')');
+    if (r.status === 429) return fail('rate_limited: too many requests to the provider');
+    if (!r.ok) return fail('provider_error: HTTP ' + r.status);
     const q = await r.json(); // { c: price, d: change, dp: change %, pc: previous close, t: unix seconds }
-    if (!q || typeof q.c !== 'number' || q.c === 0) throw new Error('Empty quote');
+    if (!q || typeof q.c !== 'number' || q.c === 0) return fail('no_data: the provider returned no price for ' + SYMBOL);
     res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate=600');
     res.status(200).json({
       ts: Date.now(),
@@ -27,7 +33,6 @@ module.exports = async (req, res) => {
       },
     });
   } catch (e) {
-    res.setHeader('Cache-Control', 'no-store');
-    res.status(503).json({ error: 'unavailable' });
+    fail('network_error: ' + (e && e.message ? e.message : 'request failed'));
   }
 };
