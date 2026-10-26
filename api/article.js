@@ -76,16 +76,29 @@ module.exports = async (req, res) => {
     return res.status(404).send(page({ L, lang, base, id, notFound: true }));
   }
   const item = list[i];
-  let body = '', summary = '';
+  let body = '', summary = '', diag = { source: 'page', status: null, bytes: 0, extracted: 0, rss: item.rss ? item.rss.length : 0 };
   try {
     const r = await fetch(item.url, { headers: { 'User-Agent': 'Mozilla/5.0 (compatible; XMaxInvestorRelations/1.0; IR@XMax.com)', 'Accept': 'text/html' } });
+    diag.status = r.status;
     if (r.ok) {
       const html = await r.text();
+      diag.bytes = html.length;
       body = clean(extractBody(html));
+      diag.extracted = body.length;
       summary = meta(html, 'og:description') || meta(html, 'description');
     }
-  } catch (e) { /* fall through to the summary view */ }
-  const ok = body.replace(/<[^>]+>/g, '').trim().length > 200;
+  } catch (e) { diag.error = String(e && e.message || e); }
+  const len = (h) => h.replace(/<[^>]+>/g, '').trim().length;
+  if (len(body) <= 200 && item.rss) {               // official RSS feed as a fallback source
+    const b2 = clean(item.rss);
+    if (len(b2) > len(body)) { body = b2; diag.source = 'rss'; }
+  }
+  const ok = len(body) > 200;
+  if (q.debug) {
+    res.setHeader('Content-Type', 'application/json; charset=utf-8');
+    res.setHeader('Cache-Control', 'no-store');
+    return res.status(200).send(JSON.stringify(Object.assign({ id, url: item.url, ok, rssConfigured: !!process.env.GNW_RSS }, diag), null, 1));
+  }
   res.setHeader('Cache-Control', ok ? 's-maxage=86400, stale-while-revalidate=604800' : 's-maxage=300');
   res.status(200).send(page({ L, lang, base, id, item, body: ok ? body : '', summary, prev: list[i + 1], next: list[i - 1],
     related: list.filter((x) => x.id !== id).sort((a, b) => (b.cat === item.cat) - (a.cat === item.cat)).slice(0, 4) }));

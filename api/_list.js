@@ -33,7 +33,9 @@ async function fromRss() {
       const url = get('link'), title = get('title'), id = idFromUrl(url);
       if (!id || !title) continue;
       const d = new Date(get('pubDate'));
-      out.push({ id, url, title, date: isNaN(d) ? '' : d.toISOString().slice(0, 10), cat: guessCat(title) });
+      const cm = /<content:encoded>([\s\S]*?)<\/content:encoded>/.exec(it);
+      const rich = cm ? decode(cm[1]) : get('description');
+      out.push({ id, url, title, date: isNaN(d) ? '' : d.toISOString().slice(0, 10), cat: guessCat(title), rss: rich });
     }
     return out;
   } catch (e) { return []; }
@@ -42,7 +44,7 @@ async function fromRss() {
 async function getList() {
   const rss = await fromRss();
   const byId = new Map(REG.map((x) => [x.id, x]));
-  for (const x of rss) if (!byId.has(x.id)) byId.set(x.id, x);
+  for (const x of rss) { const old = byId.get(x.id); if (!old) byId.set(x.id, x); else if (x.rss) old.rss = x.rss; }
   return [...byId.values()].sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
 }
 
