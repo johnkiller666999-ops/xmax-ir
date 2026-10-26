@@ -54,7 +54,24 @@ function clean(h) {
     }
     return '<' + t + '>';
   });
-  return h.replace(/<p>(\s|&nbsp;|<br>)*<\/p>/gi, '').replace(/\n{3,}/g, '\n\n').trim();
+  return tidy(h);
+}
+// Remove layout leftovers from SEC exhibits (empty tables/rows/cells/paragraphs) and the old
+// investor-relations contact block, which the page replaces with its own contact card.
+const txt = (x) => x.replace(/<[^>]+>/g, '').replace(/&nbsp;|&#160;|&#xa0;|\u00a0/gi, ' ').trim();
+function tidy(h) {
+  for (let k = 0; k < 3; k++) {
+    h = h.replace(/<(td|th)>([\s\S]*?)<\/\1>/gi, (m, t, inner) => (txt(inner) ? m : '<' + t + '></' + t + '>'))
+         .replace(/<tr>(?:\s|<(td|th)><\/\1>)*<\/tr>/gi, '')
+         .replace(/<(thead|tbody)>\s*<\/\1>/gi, '')
+         .replace(/<table>([\s\S]*?)<\/table>/gi, (m, inner) => (txt(inner) ? m : ''))
+         .replace(/<(p|h2|h3|h4|h5|li|blockquote|strong|b|em|i|u|a)>(\s|&nbsp;|&#160;|\u00a0|<br>)*<\/\1>/gi, '');
+  }
+  h = h.replace(/<(p|h2|h3|h4|h5)>([\s\S]*?)<\/\1>/gi, (m, t, inner) => {
+    const s = txt(inner);
+    return s.length < 160 && /^(investor relations contacts?:?|investor (and|&) media contacts?:?|media contacts?:?|contacts?:?|icr,? llc\.?)$|icrinc\.com/i.test(s) ? '' : m;
+  });
+  return h.replace(/(<br>\s*){3,}/gi, '<br><br>').replace(/\n{3,}/g, '\n\n').trim();
 }
 function meta(html, prop) {
   const m = new RegExp('<meta[^>]+(?:property|name)=["\']' + prop + '["\'][^>]*content=["\']([^"\']*)["\']', 'i').exec(html);
