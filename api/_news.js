@@ -1,4 +1,5 @@
 // Registry of press releases already published (kept so pages work even if the RSS feed is unavailable).
+// Optional per item: "body": "<p>...</p>" to supply the full text manually (used first).
 // New releases are picked up automatically from the GlobeNewswire RSS feed (see GNW_RSS in news.js),
 // so this list does not need to be edited for each new release.
 module.exports = [
@@ -19,6 +20,15 @@ module.exports = [
   "title": "XMax announces cooperation with apM Group in Korea and expansion into vertical AI applications",
   "zh": "XMax 宣布与韩国 apM 集团合作，并拓展垂直领域 AI 应用",
   "zht": "XMax 宣佈與韓國 apM 集團合作，並拓展垂直領域 AI 應用"
+ },
+ {
+  "id": "xmax-q2-2026",
+  "date": "2026-08-14",
+  "cat": "Results",
+  "url": "https://www.morningstar.com/news/globe-newswire/9810644/xmax-inc-announces-second-quarter-2026-financial-results",
+  "title": "XMax Inc. announces second quarter 2026 financial results",
+  "zh": "XMax Inc. 公布2026年第二季度财务业绩",
+  "zht": "XMax Inc. 公佈2026年第二季度財務業績"
  },
  {
   "id": "3318908",

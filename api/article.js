@@ -2,7 +2,7 @@
 // The text is taken from the company's own release on GlobeNewswire, cleaned, and shown in the
 // IR site's design with a source card linking to the original. Pages are cached for a day.
 const { getList } = require('./_list.js');
-const T = {"en": {"home": "Investor Relations", "news": "Press Releases", "back": "← All press releases", "src": "Source", "orig": "Originally published on GlobeNewswire", "view": "View original", "related": "Related news", "copy": "Copy link", "copied": "Link copied", "print": "Print", "prev": "Previous", "next": "Next", "fail": "The full text could not be loaded right now. Please read the original release using the button above.", "note": "", "disclaimer": "This press release is reproduced from the company’s official distribution through GlobeNewswire. In any conflict, the original release and the company’s SEC filings control.", "nf": "Press release not found", "nfp": "This press release is not available. Return to the list of press releases.", "cats": {"M&A": "M&A", "AI": "AI", "Results": "Results", "Corporate": "Corporate"}, "loc": "en-US", "secnote": "Full text as filed with the SEC (Form 8-K, Exhibit 99.1)."}, "zh-Hans": {"home": "投资者关系", "news": "新闻稿", "back": "← 返回新闻列表", "src": "来源", "orig": "原文发布于 GlobeNewswire", "view": "查看原文", "related": "相关新闻", "copy": "复制链接", "copied": "已复制链接", "print": "打印", "prev": "上一篇", "next": "下一篇", "fail": "暂时无法加载正文，请点击上方按钮阅读原文。", "note": "以下正文为英文原文，如有歧义，以英文原文为准。", "disclaimer": "本新闻稿转载自公司通过 GlobeNewswire 发布的正式版本。如有不一致，以原文及公司向 SEC 提交的文件为准。", "nf": "未找到该新闻稿", "nfp": "该新闻稿暂不可用，请返回新闻列表。", "cats": {"M&A": "并购", "AI": "AI", "Results": "业绩", "Corporate": "公司动态"}, "loc": "zh-CN", "secnote": "正文取自公司向 SEC 提交的文件（8-K 附件 99.1）。"}, "zh-Hant": {"home": "投資者關係", "news": "新聞稿", "back": "← 返回新聞列表", "src": "來源", "orig": "原文發佈於 GlobeNewswire", "view": "查看原文", "related": "相關新聞", "copy": "複製鏈接", "copied": "已複製鏈接", "print": "打印", "prev": "上一篇", "next": "下一篇", "fail": "暫時無法加載正文，請點擊上方按鈕閱讀原文。", "note": "以下正文為英文原文，如有歧義，以英文原文為準。", "disclaimer": "本新聞稿轉載自公司通過 GlobeNewswire 發佈的正式版本。如有不一致，以原文及公司向 SEC 提交的文件為準。", "nf": "未找到該新聞稿", "nfp": "該新聞稿暫不可用，請返回新聞列表。", "cats": {"M&A": "併購", "AI": "AI", "Results": "業績", "Corporate": "公司動態"}, "loc": "zh-TW", "secnote": "正文取自公司向 SEC 提交的文件（8-K 附件 99.1）。"}};
+const T = {"en": {"home": "Investor Relations", "news": "Press Releases", "back": "← All press releases", "src": "Source", "orig": "Originally published on GlobeNewswire", "view": "View original", "related": "Related news", "copy": "Copy link", "copied": "Link copied", "print": "Print", "prev": "Previous", "next": "Next", "fail": "The full text of this press release is available at its original source. Select the button below to open it in a new window.", "note": "", "disclaimer": "This press release is reproduced from the company’s official distribution through GlobeNewswire. In any conflict, the original release and the company’s SEC filings control.", "nf": "Press release not found", "nfp": "This press release is not available. Return to the list of press releases.", "cats": {"M&A": "M&A", "AI": "AI", "Results": "Results", "Corporate": "Corporate"}, "loc": "en-US", "secnote": "Full text as filed with the SEC (Form 8-K, Exhibit 99.1).", "ftitle": "Read the full press release", "ctLead": "For investor and media inquiries, please contact:", "ctIR": "Investor Relations", "ctMail": "E-mail"}, "zh-Hans": {"home": "投资者关系", "news": "新闻稿", "back": "← 返回新闻列表", "src": "来源", "orig": "原文发布于 GlobeNewswire", "view": "查看原文", "related": "相关新闻", "copy": "复制链接", "copied": "已复制链接", "print": "打印", "prev": "上一篇", "next": "下一篇", "fail": "本篇新闻稿全文请在原发布页面阅读，点击下方按钮将在新窗口打开。", "note": "以下正文为英文原文，如有歧义，以英文原文为准。", "disclaimer": "本新闻稿转载自公司通过 GlobeNewswire 发布的正式版本。如有不一致，以原文及公司向 SEC 提交的文件为准。", "nf": "未找到该新闻稿", "nfp": "该新闻稿暂不可用，请返回新闻列表。", "cats": {"M&A": "并购", "AI": "AI", "Results": "业绩", "Corporate": "公司动态"}, "loc": "zh-CN", "secnote": "正文取自公司向 SEC 提交的文件（8-K 附件 99.1）。", "ftitle": "阅读完整新闻稿", "ctLead": "投资者及媒体垂询，请联系：", "ctIR": "投资者关系部", "ctMail": "邮箱"}, "zh-Hant": {"home": "投資者關係", "news": "新聞稿", "back": "← 返回新聞列表", "src": "來源", "orig": "原文發佈於 GlobeNewswire", "view": "查看原文", "related": "相關新聞", "copy": "複製鏈接", "copied": "已複製鏈接", "print": "打印", "prev": "上一篇", "next": "下一篇", "fail": "本篇新聞稿全文請在原發布頁面閱讀，點擊下方按鈕將在新窗口打開。", "note": "以下正文為英文原文，如有歧義，以英文原文為準。", "disclaimer": "本新聞稿轉載自公司通過 GlobeNewswire 發佈的正式版本。如有不一致，以原文及公司向 SEC 提交的文件為準。", "nf": "未找到該新聞稿", "nfp": "該新聞稿暫不可用，請返回新聞列表。", "cats": {"M&A": "併購", "AI": "AI", "Results": "業績", "Corporate": "公司動態"}, "loc": "zh-TW", "secnote": "正文取自公司向 SEC 提交的文件（8-K 附件 99.1）。", "ftitle": "閱讀完整新聞稿", "ctLead": "投資者及媒體垂詢，請聯繫：", "ctIR": "投資者關係部", "ctMail": "郵箱"}};
 
 const esc = (s) => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
@@ -107,7 +107,7 @@ const titleOf = (x, lang) => (lang === 'zh-Hans' && x.zh) || (lang === 'zh-Hant'
 
 module.exports = async (req, res) => {
   const q = req.query || {};
-  const id = (String(q.id || '').match(/^\d+/) || [''])[0];
+  const id = (String(q.id || '').toLowerCase().match(/^[a-z0-9-]+/) || [''])[0];
   const lang = T[q.lang] ? q.lang : 'en';
   const L = T[lang];
   const base = 'https://' + (req.headers['x-forwarded-host'] || req.headers.host);
@@ -136,6 +136,7 @@ module.exports = async (req, res) => {
   } catch (e) { diag.error = String(e && e.message || e); }
   const len = (h) => h.replace(/<[^>]+>/g, '').trim().length;
   let secUrl = '';
+  if (item.body) { body = clean(item.body); diag.source = 'manual'; }
   if (len(body) <= 200) {                           // 1st choice: the copy filed with the SEC
     const sec = await fromSec(item, diag);
     if (sec && len(sec.body) > 200) { body = sec.body; secUrl = sec.url; diag.source = 'sec'; }
@@ -205,11 +206,12 @@ h1{font:700 clamp(28px,4vw,44px)/1.2 Sora,"Noto Sans SC",sans-serif;margin:0;max
 .body ul,.body ol{padding-left:1.3em}.body li{margin:.3em 0}.body strong,.body b{color:#fff}
 .body table{border-collapse:collapse;margin:1.2em 0;font-size:14px;display:block;overflow-x:auto;max-width:100%}.body td,.body th{border:1px solid var(--line);padding:7px 10px;text-align:left}
 .body blockquote{margin:1.2em 0;padding-left:16px;border-left:3px solid var(--accent);color:var(--muted)}
-.fail{color:var(--muted)}
+.ph{border:1px solid var(--line);border-radius:18px;background:linear-gradient(160deg,var(--surface),var(--bg2));padding:40px 32px;text-align:center;max-width:46em}.ph .ic{margin:0 auto 16px}.ph h2{font:600 22px Sora,"Noto Sans SC",sans-serif;margin:0 0 8px}.ph p{color:var(--muted);margin:0 auto 22px;max-width:30em}
 aside .box{border:1px solid var(--line);border-radius:16px;background:var(--surface);padding:20px;position:sticky;top:90px}
 aside h3{font:600 15px Sora,"Noto Sans SC",sans-serif;margin:0 0 8px}
 aside .r{display:block;padding:12px 0;border-top:1px solid var(--line);text-decoration:none;color:var(--text);font-size:14px;line-height:1.5}aside .r:hover span{color:var(--accent)}aside .r small{display:block;font:500 11.5px "JetBrains Mono","Noto Sans SC",monospace;color:var(--muted)}
 .tools{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}.tools .btn{flex:1;justify-content:center;padding:9px 12px;font-size:13.5px}
+.ct{margin-top:36px;padding:22px 24px;border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:14px;background:var(--surface);max-width:46em}.ct p{margin:0;color:var(--text);line-height:1.7}.ct p:first-child{color:var(--muted);margin-bottom:10px}.ct a{text-decoration:none}
 .pnr{display:grid;grid-template-columns:1fr 1fr;gap:16px;border-top:1px solid var(--line);padding-top:28px;margin-top:32px}@media(max-width:640px){.pnr{grid-template-columns:1fr}}
 .pn{display:block;border:1px solid var(--line);border-radius:14px;padding:16px 18px;text-decoration:none;color:var(--text);background:var(--surface);transition:border-color .2s,transform .2s}.pn:hover{border-color:var(--accent);transform:translateY(-2px)}
 .pn small{display:block;font:500 11.5px "JetBrains Mono","Noto Sans SC",monospace;color:var(--accent);margin-bottom:4px}.pn span{font-size:14.5px;line-height:1.45}
@@ -230,8 +232,9 @@ ${notFound ? `<h1 style="margin-top:22px">${esc(L.nf)}</h1><p class="en">${esc(L
 <a class="btn p" href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">${esc(L.view)} ↗</a><button class="btn" id="cp" type="button">${esc(L.copy)}</button></div>`}
 </div></div>
 ${notFound ? '' : `<div class="wrap grid"><article>
-${lang !== 'en' && L.note ? `<p class="note">${esc(L.note)}</p>` : ''}
-<div class="body">${body || `<p>${esc(summary)}</p><p class="fail">${esc(L.fail)}</p>`}</div>
+${lang !== 'en' && L.note && body ? `<p class="note">${esc(L.note)}</p>` : ''}
+${body ? `<div class="body">${body}</div>` : `<div class="ph"><span class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8b7bff" stroke-width="1.8" stroke-linejoin="round"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6M9 13h8M9 17h5"/></svg></span><h2>${esc(L.ftitle)}</h2><p>${esc(L.fail)}</p><a class="btn p" href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">${esc(L.view)} ↗</a></div>`}
+<div class="ct"><p>${esc(L.ctLead)}</p><p>${esc(L.ctIR)}<br>XMax Inc.<br>${esc(L.ctMail)}: <a href="mailto:IR@XMax.com">IR@XMax.com</a></p></div>
 <div class="pnr">${card(prev, '← ' + L.prev)}${card(next, L.next + ' →')}</div>
 <p class="disc">${esc(L.disclaimer)}</p>
 </article>
