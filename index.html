@@ -642,8 +642,9 @@ var N=[['2026-10-09','XMax to acquire Hexa Creation, developer of 1200V vertical
 ['2026-04-08','XMax advances AI strategy through development and deployment of an AI inference platform',NW+'2026/04/08/3270540/37029/en/XMax-Advances-AI-Strategy-Through-Development-and-Deployment-of-An-AI-Inference-Platform.html','AI'],
 ['2026-04-06','XMax announces formation of XMax AI Inc. to execute AI expansion strategy',NW+'2026/04/06/3268739/37029/en/xmax-announces-formation-of-xmax-ai-inc-to-execute-ai-expansion-strategy.html','AI'],
 ['2026-03-24','XMax announces strategic expansion into artificial intelligence to drive growth and diversification',NW+'2026/03/24/3261791/37029/en/XMax-Announces-Strategic-Expansion-Into-Artificial-Intelligence-to-Drive-Growth-and-Diversification.html','AI']];
-var shown=7;function rn(){$('#tl').innerHTML=N.slice(0,shown).map(function(n){return '<div class="ti"><time>'+fd(n[0])+'</time> <span>· <span>'+n[3]+'</span></span><a href="'+n[2]+'">'+n[1]+'</a></div>'}).join('');$('#more').hidden=shown>=N.length;
-$('#ovnews').innerHTML=N.slice(0,5).map(function(n){return '<a class="li" href="'+n[2]+'"><span class="lm">'+fd(n[0])+' · <span>'+n[3]+'</span></span><span class="lt">'+n[1]+'</span></a>'}).join('')}
+function nl(n){var m=/news-release\/\d{4}\/\d{2}\/\d{2}\/(\d+)\//.exec(n[2]);if(!m||!/^https?:$/.test(location.protocol))return n[2];return '/news/'+m[1]+(L==='zh-Hans'||L==='zh-Hant'?'?lang='+L:'')}
+var shown=7;function rn(){$('#tl').innerHTML=N.slice(0,shown).map(function(n){return '<div class="ti"><time>'+fd(n[0])+'</time> <span>· <span>'+n[3]+'</span></span><a href="'+nl(n)+'" target="_blank" rel="noopener">'+n[1]+'</a></div>'}).join('');$('#more').hidden=shown>=N.length;
+$('#ovnews').innerHTML=N.slice(0,5).map(function(n){return '<a class="li" href="'+nl(n)+'" target="_blank" rel="noopener"><span class="lm">'+fd(n[0])+' · <span>'+n[3]+'</span></span><span class="lt">'+n[1]+'</span></a>'}).join('')}
 $('#more').onclick=function(){shown=N.length;rn()};
 var R=[['Q2 2026',A+'000149315226038444/form10-q.htm','10-Q',''],['Q1 2026',A+'000149315226023861/form10-q.htm','10-Q',N[6][2]],['FY 2025','','10-K',''],['Q3 2025','','10-Q','']];
 $('#rbody').innerHTML=R.map(function(r){return '<tr><td class="mono">'+r[0]+'</td><td><a class="go" href="'+(r[1]||EDGAR)+'"><span class="pill q">'+r[2]+'</span> '+(r[1]?'View ↗':'EDGAR ↗')+'</a></td><td>'+(r[3]?'<a class="go" href="'+r[3]+'">GlobeNewswire ↗</a>':'<span style="color:var(--muted)">—</span>')+'</td></tr>'}).join('');
@@ -759,6 +760,7 @@ addEventListener('scroll',sc,{passive:true});tb.onclick=function(){scrollTo({top
 /* ===== live data (works when deployed with the data worker on the company domain) ===== */
 function getJSON(u){return new Promise(function(res){try{var c=new AbortController(),tmo=setTimeout(function(){c.abort()},6000);fetch(u,{cache:'no-store',signal:c.signal}).then(function(r){clearTimeout(tmo);return r.ok?r.json():null}).then(res).catch(function(){res(null)})}catch(e){res(null)}})}
 function loadLive(){
+getJSON('/api/news').then(function(j){if(!j||!j.data||!j.data.length)return;var extra=N.filter(function(n){return !/news-release\/\d{4}/.test(n[2])});N=j.data.map(function(x){return [x.date,x.title,x.url,x.cat]}).concat(extra).sort(function(a,b){return a[0]<b[0]?1:a[0]>b[0]?-1:0});rn()});
 getJSON(API.filings).then(function(j){if(!j||!j.data||!j.data.length)return;if(!F0)F0=F.slice();var mp={};F0.forEach(function(r){if(r[2]!=='Current report')mp[r[0]+'|'+r[1]]=r[2]});F=j.data.map(function(x){return [x.date,x.form,mp[x.date+'|'+x.form]||x.desc||x.form,x.period||'',x.url||'']});rf();var tg=$('#fsrc');tg.innerHTML='<span class="dot open"></span>LIVE · SEC EDGAR';});
 getJSON(API.quote).then(function(j){var d=j&&j.data;if(!d||typeof d.price!=='number')return;
 $$('.px').forEach(function(e){e.textContent='$'+d.price.toFixed(2);e.classList.add('live')});
