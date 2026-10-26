@@ -2,7 +2,7 @@
 // The text is taken from the company's own release on GlobeNewswire, cleaned, and shown in the
 // IR site's design with a source card linking to the original. Pages are cached for a day.
 const { getList } = require('./_list.js');
-const T = {"en": {"home": "Investor Relations", "news": "Press Releases", "back": "← All press releases", "src": "Source", "orig": "Originally published on GlobeNewswire", "view": "View original", "related": "Related news", "copy": "Copy link", "copied": "Link copied", "print": "Print", "prev": "Previous", "next": "Next", "fail": "The full text could not be loaded right now. Please read the original release using the button above.", "note": "", "disclaimer": "This press release is reproduced from the company’s official distribution through GlobeNewswire. In any conflict, the original release and the company’s SEC filings control.", "nf": "Press release not found", "nfp": "This press release is not available. Return to the list of press releases.", "cats": {"M&A": "M&A", "AI": "AI", "Results": "Results", "Corporate": "Corporate"}, "loc": "en-US"}, "zh-Hans": {"home": "投资者关系", "news": "新闻稿", "back": "← 返回新闻列表", "src": "来源", "orig": "原文发布于 GlobeNewswire", "view": "查看原文", "related": "相关新闻", "copy": "复制链接", "copied": "已复制链接", "print": "打印", "prev": "上一篇", "next": "下一篇", "fail": "暂时无法加载正文，请点击上方按钮阅读原文。", "note": "以下正文为英文原文，中文翻译将在下一步接入；如有歧义，以英文原文为准。", "disclaimer": "本新闻稿转载自公司通过 GlobeNewswire 发布的正式版本。如有不一致，以原文及公司向 SEC 提交的文件为准。", "nf": "未找到该新闻稿", "nfp": "该新闻稿暂不可用，请返回新闻列表。", "cats": {"M&A": "并购", "AI": "AI", "Results": "业绩", "Corporate": "公司动态"}, "loc": "zh-CN"}, "zh-Hant": {"home": "投資者關係", "news": "新聞稿", "back": "← 返回新聞列表", "src": "來源", "orig": "原文發佈於 GlobeNewswire", "view": "查看原文", "related": "相關新聞", "copy": "複製鏈接", "copied": "已複製鏈接", "print": "打印", "prev": "上一篇", "next": "下一篇", "fail": "暫時無法加載正文，請點擊上方按鈕閱讀原文。", "note": "以下正文為英文原文，中文翻譯將在下一步接入；如有歧義，以英文原文為準。", "disclaimer": "本新聞稿轉載自公司通過 GlobeNewswire 發佈的正式版本。如有不一致，以原文及公司向 SEC 提交的文件為準。", "nf": "未找到該新聞稿", "nfp": "該新聞稿暫不可用，請返回新聞列表。", "cats": {"M&A": "併購", "AI": "AI", "Results": "業績", "Corporate": "公司動態"}, "loc": "zh-TW"}};
+const T = {"en": {"home": "Investor Relations", "news": "Press Releases", "back": "← All press releases", "src": "Source", "orig": "Originally published on GlobeNewswire", "view": "View original", "related": "Related news", "copy": "Copy link", "copied": "Link copied", "print": "Print", "prev": "Previous", "next": "Next", "fail": "The full text could not be loaded right now. Please read the original release using the button above.", "note": "", "disclaimer": "This press release is reproduced from the company’s official distribution through GlobeNewswire. In any conflict, the original release and the company’s SEC filings control.", "nf": "Press release not found", "nfp": "This press release is not available. Return to the list of press releases.", "cats": {"M&A": "M&A", "AI": "AI", "Results": "Results", "Corporate": "Corporate"}, "loc": "en-US", "secnote": "Full text as filed with the SEC (Form 8-K, Exhibit 99.1)."}, "zh-Hans": {"home": "投资者关系", "news": "新闻稿", "back": "← 返回新闻列表", "src": "来源", "orig": "原文发布于 GlobeNewswire", "view": "查看原文", "related": "相关新闻", "copy": "复制链接", "copied": "已复制链接", "print": "打印", "prev": "上一篇", "next": "下一篇", "fail": "暂时无法加载正文，请点击上方按钮阅读原文。", "note": "以下正文为英文原文，如有歧义，以英文原文为准。", "disclaimer": "本新闻稿转载自公司通过 GlobeNewswire 发布的正式版本。如有不一致，以原文及公司向 SEC 提交的文件为准。", "nf": "未找到该新闻稿", "nfp": "该新闻稿暂不可用，请返回新闻列表。", "cats": {"M&A": "并购", "AI": "AI", "Results": "业绩", "Corporate": "公司动态"}, "loc": "zh-CN", "secnote": "正文取自公司向 SEC 提交的文件（8-K 附件 99.1）。"}, "zh-Hant": {"home": "投資者關係", "news": "新聞稿", "back": "← 返回新聞列表", "src": "來源", "orig": "原文發佈於 GlobeNewswire", "view": "查看原文", "related": "相關新聞", "copy": "複製鏈接", "copied": "已複製鏈接", "print": "打印", "prev": "上一篇", "next": "下一篇", "fail": "暫時無法加載正文，請點擊上方按鈕閱讀原文。", "note": "以下正文為英文原文，如有歧義，以英文原文為準。", "disclaimer": "本新聞稿轉載自公司通過 GlobeNewswire 發佈的正式版本。如有不一致，以原文及公司向 SEC 提交的文件為準。", "nf": "未找到該新聞稿", "nfp": "該新聞稿暫不可用，請返回新聞列表。", "cats": {"M&A": "併購", "AI": "AI", "Results": "業績", "Corporate": "公司動態"}, "loc": "zh-TW", "secnote": "正文取自公司向 SEC 提交的文件（8-K 附件 99.1）。"}};
 
 const esc = (s) => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
@@ -40,7 +40,8 @@ function clean(h) {
   h = h.replace(/<(\/?)([a-z0-9]+)\b([^>]*)>/gi, (m, close, t, attrs) => {
     t = t.toLowerCase();
     if (t === 'h1') t = 'h2';
-    if (!OK.has(t)) return (t === 'div' || t === 'section') ? '\n' : '';
+    if (t === 'div') t = 'p';
+    if (!OK.has(t)) return t === 'section' ? '\n' : '';
     if (close) return '</' + t + '>';
     if (t === 'a') {
       const hm = /href\s*=\s*["']([^"']+)["']/i.exec(attrs);
@@ -59,6 +60,48 @@ function meta(html, prop) {
   const m = new RegExp('<meta[^>]+(?:property|name)=["\']' + prop + '["\'][^>]*content=["\']([^"\']*)["\']', 'i').exec(html);
   return m ? m[1] : '';
 }
+
+/* ---------- Official source: the press release filed with the SEC (Form 8-K, Exhibit 99.1) ---------- */
+const CIK_NUM = '1473334';
+const SEC_H = () => ({ 'User-Agent': process.env.SEC_UA || 'XMax Inc. Investor Relations IR@XMax.com', 'Accept': '*/*' });
+const words = (t) => (String(t).toLowerCase().match(/[a-z0-9$.]{4,}/g) || []).filter((w) => !['xmax','announces','announce','with','into','from','that','inc.'].includes(w));
+async function fromSec(item, diag) {
+  try {
+    const r = await fetch('https://data.sec.gov/submissions/CIK000' + CIK_NUM + '.json', { headers: SEC_H() });
+    diag.sec = r.status;
+    if (!r.ok) return null;
+    const f = (await r.json()).filings.recent;
+    const day = (d) => Date.parse(d + 'T00:00:00Z') / 864e5;
+    const target = day(item.date);
+    const cands = [];
+    for (let i = 0; i < f.form.length; i++) {
+      if (!/^8-K/.test(f.form[i])) continue;
+      const gap = day(f.filingDate[i]) - target;
+      if (gap >= -1 && gap <= 5) cands.push({ acc: f.accessionNumber[i].replace(/-/g, ''), gap: Math.abs(gap) });
+    }
+    cands.sort((a, b) => a.gap - b.gap);
+    const want = words(item.title);
+    for (const c of cands.slice(0, 4)) {
+      const base = 'https://www.sec.gov/Archives/edgar/data/' + CIK_NUM + '/' + c.acc + '/';
+      const ix = await fetch(base + 'index.json', { headers: SEC_H() });
+      if (!ix.ok) continue;
+      const names = ((await ix.json()).directory || {}).item || [];
+      const ex = names.map((x) => x.name).filter((n) => /ex[-_]?99[-_.]?0?1|ex99/i.test(n) && /\.html?$/i.test(n));
+      for (const n of ex) {
+        const d = await fetch(base + n, { headers: SEC_H() });
+        if (!d.ok) continue;
+        const html = await d.text();
+        const bm = /<body[^>]*>([\s\S]*)<\/body>/i.exec(html);
+        const body = clean(bm ? bm[1] : html);
+        const text = body.replace(/<[^>]+>/g, ' ').toLowerCase().slice(0, 3000);
+        const hit = want.length ? want.filter((w) => text.includes(w)).length / want.length : 0;
+        diag.secMatch = Math.round(hit * 100) / 100;
+        if (hit >= 0.5) return { body, url: base + n };
+      }
+    }
+  } catch (e) { diag.secError = String(e && e.message || e); }
+  return null;
+}
 const fmtDate = (d, loc) => { try { return new Date(d + 'T12:00:00Z').toLocaleDateString(loc, { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' }); } catch (e) { return d; } };
 const titleOf = (x, lang) => (lang === 'zh-Hans' && x.zh) || (lang === 'zh-Hant' && x.zht) || x.title;
 
@@ -76,8 +119,11 @@ module.exports = async (req, res) => {
     return res.status(404).send(page({ L, lang, base, id, notFound: true }));
   }
   const item = list[i];
-  let body = '', summary = '', diag = { source: 'page', status: null, bytes: 0, extracted: 0, rss: item.rss ? item.rss.length : 0 };
-  try {
+  let body = '', summary = '', diag = { source: process.env.GNW_FETCH_PAGES === '1' ? 'page' : 'none', status: null, bytes: 0, extracted: 0, rss: item.rss ? item.rss.length : 0 };
+  // GlobeNewswire disallows automated access to its web pages, so direct page fetching is OFF by default.
+  // Article text comes from the official RSS/newsfeed (GNW_RSS) instead. Only enable GNW_FETCH_PAGES=1
+  // if GlobeNewswire has given the company written permission.
+  if (process.env.GNW_FETCH_PAGES === '1') try {
     const r = await fetch(item.url, { headers: { 'User-Agent': 'Mozilla/5.0 (compatible; XMaxInvestorRelations/1.0; IR@XMax.com)', 'Accept': 'text/html' } });
     diag.status = r.status;
     if (r.ok) {
@@ -89,6 +135,11 @@ module.exports = async (req, res) => {
     }
   } catch (e) { diag.error = String(e && e.message || e); }
   const len = (h) => h.replace(/<[^>]+>/g, '').trim().length;
+  let secUrl = '';
+  if (len(body) <= 200) {                           // 1st choice: the copy filed with the SEC
+    const sec = await fromSec(item, diag);
+    if (sec && len(sec.body) > 200) { body = sec.body; secUrl = sec.url; diag.source = 'sec'; }
+  }
   if (len(body) <= 200 && item.rss) {               // official RSS feed as a fallback source
     const b2 = clean(item.rss);
     if (len(b2) > len(body)) { body = b2; diag.source = 'rss'; }
@@ -100,12 +151,12 @@ module.exports = async (req, res) => {
     return res.status(200).send(JSON.stringify(Object.assign({ id, url: item.url, ok, rssConfigured: !!process.env.GNW_RSS }, diag), null, 1));
   }
   res.setHeader('Cache-Control', ok ? 's-maxage=86400, stale-while-revalidate=604800' : 's-maxage=300');
-  res.status(200).send(page({ L, lang, base, id, item, body: ok ? body : '', summary, prev: list[i + 1], next: list[i - 1],
+  res.status(200).send(page({ L, lang, base, id, item, secUrl, body: ok ? body : '', summary, prev: list[i + 1], next: list[i - 1],
     related: list.filter((x) => x.id !== id).sort((a, b) => (b.cat === item.cat) - (a.cat === item.cat)).slice(0, 4) }));
 };
 
 function page(o) {
-  const { L, lang, base, id, item, body, summary, prev, next, related, notFound } = o;
+  const { L, lang, base, id, item, secUrl, body, summary, prev, next, related, notFound } = o;
   const canon = base + '/news/' + id;
   const title = notFound ? L.nf : titleOf(item, lang);
   const plain = body ? body.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim() : (summary || '');
@@ -145,7 +196,7 @@ h1{font:700 clamp(28px,4vw,44px)/1.2 Sora,"Noto Sans SC",sans-serif;margin:0;max
 .src{position:relative;display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-top:30px;padding:18px 20px;border-radius:16px;background:color-mix(in srgb,var(--surface) 75%,transparent);backdrop-filter:blur(12px);border:1px solid var(--line);box-shadow:0 24px 60px -40px var(--accent)}
 .src::before{content:"";position:absolute;inset:-1px;border-radius:inherit;padding:1px;background:linear-gradient(120deg,var(--accent),transparent 35%,transparent 65%,var(--accent2));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
 .ic{width:46px;height:46px;border-radius:12px;display:grid;place-items:center;background:var(--surface2);border:1px solid var(--line);flex:none}
-.st{flex:1;min-width:200px}.st small{display:block;font:500 11.5px "JetBrains Mono","Noto Sans SC",monospace;color:var(--accent);letter-spacing:.04em}.st b{font-weight:500}.st span{display:block;color:var(--muted);font-size:13.5px}
+.st{flex:1;min-width:200px}.st small{display:block;font:500 11.5px "JetBrains Mono","Noto Sans SC",monospace;color:var(--accent);letter-spacing:.04em}.st b{font-weight:500}.st span{display:block;color:var(--muted);font-size:13.5px}.st .sec{font-size:12.5px;margin-top:2px}.st .sec a{text-decoration:none}
 .btn{display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:11px;text-decoration:none;font:500 14.5px "IBM Plex Sans","Noto Sans SC",sans-serif;border:1px solid var(--line);color:var(--text);background:var(--surface2);cursor:pointer}
 .btn:hover{border-color:var(--accent)}.btn.p{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#04101f;border:0}
 .grid{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:56px;padding:48px 24px 64px}@media(max-width:940px){.grid{grid-template-columns:1fr;gap:36px}}
@@ -175,7 +226,7 @@ ${notFound ? `<h1 style="margin-top:22px">${esc(L.nf)}</h1><p class="en">${esc(L
 <div class="meta"><span class="tag">${esc(L.cats[item.cat] || item.cat || '')}</span><span class="dt">${esc(date)}</span></div>
 <h1>${esc(title)}</h1>${lang !== 'en' && title !== item.title ? `<p class="en">${esc(item.title)}</p>` : ''}
 <div class="src"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#45c8ff" stroke-width="1.8" stroke-linejoin="round"><path d="M4 5h13v14H6a2 2 0 0 1-2-2zM17 9h3v8a2 2 0 0 1-2 2"/><path d="M8 9h5M8 13h5M8 17h3"/></svg></span>
-<span class="st"><small>${esc(L.src).toUpperCase()}</small><b>GlobeNewswire</b><span>${esc(L.orig)} · ${esc(date)}</span></span>
+<span class="st"><small>${esc(L.src).toUpperCase()}</small><b>GlobeNewswire</b><span>${esc(L.orig)} · ${esc(date)}</span>${secUrl ? `<span class="sec">${esc(L.secnote)} <a href="${esc(secUrl)}" target="_blank" rel="noopener noreferrer">SEC ↗</a></span>` : ''}</span>
 <a class="btn p" href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">${esc(L.view)} ↗</a><button class="btn" id="cp" type="button">${esc(L.copy)}</button></div>`}
 </div></div>
 ${notFound ? '' : `<div class="wrap grid"><article>
