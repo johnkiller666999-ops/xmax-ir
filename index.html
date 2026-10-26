@@ -631,7 +631,7 @@ $('#q').addEventListener('input',rf);
 var NW='https://www.globenewswire.com/news-release/';
 var N=[['2026-10-09','XMax to acquire Hexa Creation, developer of 1200V vertical GaN power semiconductor technology',NW+'2026/10/09/3378050/37029/en/xmax-to-acquire-hexa-creation-developer-of-1200v-vertical-gan-power-semiconductor-technology.html','M&A'],
 ['2026-09-17','XMax announces cooperation with apM Group in Korea and expansion into vertical AI applications',NW+'2026/09/17/3364385/37029/en/xmax-announces-cooperation-with-apm-group-in-korea-and-expansion-into-vertical-ai-applications.html','AI'],
-['2026-08-14','XMax Inc. announces second quarter 2026 financial results',A+'000149315226038444/form10-q.htm','Results'],
+['2026-08-14','XMax Inc. announces second quarter 2026 financial results','https://www.morningstar.com/news/globe-newswire/9810644/xmax-inc-announces-second-quarter-2026-financial-results','Results','xmax-q2-2026'],
 ['2026-06-29','XMax Inc. added to Russell 3000 Index',NW+'2026/06/29/3318908/37029/en/XMax-Inc-Added-to-Russell-3000-Index.html','Corporate'],
 ['2026-06-26','XMax announces up to approximately US$25 million in AI API-related service contracts and expansion into GPU-as-a-Service',NW+'2026/06/26/3318505/0/en/xmax-announces-up-to-approximately-us-25-million-in-ai-api-related-service-contracts-and-expansion-into-gpu-as-a-service.html','AI'],
 ['2026-05-22','XMax announces additional AI services agreement expected to generate up to approximately $3.6 million in annual revenue',NW+'2026/05/22/3300162/37029/en/XMax-Announces-Additional-AI-Services-Agreement-Expected-to-Generate-Up-to-Approximately-3-6-Million-in-Annual-Revenue.html','AI'],
@@ -642,7 +642,7 @@ var N=[['2026-10-09','XMax to acquire Hexa Creation, developer of 1200V vertical
 ['2026-04-08','XMax advances AI strategy through development and deployment of an AI inference platform',NW+'2026/04/08/3270540/37029/en/XMax-Advances-AI-Strategy-Through-Development-and-Deployment-of-An-AI-Inference-Platform.html','AI'],
 ['2026-04-06','XMax announces formation of XMax AI Inc. to execute AI expansion strategy',NW+'2026/04/06/3268739/37029/en/xmax-announces-formation-of-xmax-ai-inc-to-execute-ai-expansion-strategy.html','AI'],
 ['2026-03-24','XMax announces strategic expansion into artificial intelligence to drive growth and diversification',NW+'2026/03/24/3261791/37029/en/XMax-Announces-Strategic-Expansion-Into-Artificial-Intelligence-to-Drive-Growth-and-Diversification.html','AI']];
-function nl(n){var m=/news-release\/\d{4}\/\d{2}\/\d{2}\/(\d+)\//.exec(n[2]);if(!m||!/^https?:$/.test(location.protocol))return n[2];return '/news/'+m[1]+(L==='zh-Hans'||L==='zh-Hant'?'?lang='+L:'')}
+function nl(n){var m=/news-release\/\d{4}\/\d{2}\/\d{2}\/(\d+)\//.exec(n[2]),id=n[4]||(m&&m[1]);if(!id||!/^https?:$/.test(location.protocol))return n[2];return '/news/'+id+(L==='zh-Hans'||L==='zh-Hant'?'?lang='+L:'')}
 var shown=7;function rn(){$('#tl').innerHTML=N.slice(0,shown).map(function(n){return '<div class="ti"><time>'+fd(n[0])+'</time> <span>· <span>'+n[3]+'</span></span><a href="'+nl(n)+'" target="_blank" rel="noopener">'+n[1]+'</a></div>'}).join('');$('#more').hidden=shown>=N.length;
 $('#ovnews').innerHTML=N.slice(0,5).map(function(n){return '<a class="li" href="'+nl(n)+'" target="_blank" rel="noopener"><span class="lm">'+fd(n[0])+' · <span>'+n[3]+'</span></span><span class="lt">'+n[1]+'</span></a>'}).join('')}
 $('#more').onclick=function(){shown=N.length;rn()};
@@ -760,7 +760,7 @@ addEventListener('scroll',sc,{passive:true});tb.onclick=function(){scrollTo({top
 /* ===== live data (works when deployed with the data worker on the company domain) ===== */
 function getJSON(u){return new Promise(function(res){try{var c=new AbortController(),tmo=setTimeout(function(){c.abort()},6000);fetch(u,{cache:'no-store',signal:c.signal}).then(function(r){clearTimeout(tmo);return r.ok?r.json():null}).then(res).catch(function(){res(null)})}catch(e){res(null)}})}
 function loadLive(){
-getJSON('/api/news').then(function(j){if(!j||!j.data||!j.data.length)return;var extra=N.filter(function(n){return !/news-release\/\d{4}/.test(n[2])});N=j.data.map(function(x){return [x.date,x.title,x.url,x.cat]}).concat(extra).sort(function(a,b){return a[0]<b[0]?1:a[0]>b[0]?-1:0});rn()});
+getJSON('/api/news').then(function(j){if(!j||!j.data||!j.data.length)return;var extra=N.filter(function(n){return !n[4]&&!/news-release\/\d{4}/.test(n[2])});N=j.data.map(function(x){return [x.date,x.title,x.url,x.cat,x.id]}).concat(extra).sort(function(a,b){return a[0]<b[0]?1:a[0]>b[0]?-1:0});rn()});
 getJSON(API.filings).then(function(j){if(!j||!j.data||!j.data.length)return;if(!F0)F0=F.slice();var mp={};F0.forEach(function(r){if(r[2]!=='Current report')mp[r[0]+'|'+r[1]]=r[2]});F=j.data.map(function(x){return [x.date,x.form,mp[x.date+'|'+x.form]||x.desc||x.form,x.period||'',x.url||'']});rf();var tg=$('#fsrc');tg.innerHTML='<span class="dot open"></span>LIVE · SEC EDGAR';});
 getJSON(API.quote).then(function(j){var d=j&&j.data;if(!d||typeof d.price!=='number')return;
 $$('.px').forEach(function(e){e.textContent='$'+d.price.toFixed(2);e.classList.add('live')});
