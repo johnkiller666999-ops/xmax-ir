@@ -384,13 +384,13 @@ html:not([lang="en"]) .lnote{display:block}
 <div class="view" data-view="financials">
 <div class="phead"><div class="wrap"><div class="crumb"><a href="#overview" data-i="92">Home</a> / <span data-i="2">Financials</span></div><h1 data-i="41">Financial performance</h1></div></div>
 <section><div class="wrap rv">
-<div class="sh"><div><span class="no">01</span><h2 data-i="41">Financial performance</h2><p class="sub">Key figures from the company’s annual and quarterly reports. Amounts in U.S. dollars.</p></div>
+<div class="sh"><div><span class="no">01</span><h2 data-i="41">Financial performance</h2><p class="sub">Key figures from the company’s annual and quarterly reports. Amounts in U.S. dollars. <span class="live-tag" id="fnsrc"><span class="dot"></span>Snapshot</span></p></div>
 <div class="tabs" role="tablist" aria-label="Period"><button role="tab" aria-selected="true" data-p="q" data-i="42">Quarterly</button><button role="tab" aria-selected="false" data-p="a" data-i="43">Annual</button></div></div>
 <div class="kpis">
-<div class="card spot kpi"><span class="tag">H1 2026</span><span class="l" data-i="44">Total revenues</span><b class="cntup" data-v="4.52" data-d="2">$4.52M</b><span class="d">vs $5.19M in H1 2025</span></div>
+<div class="card spot kpi"><span class="tag" id="k-rev-t">H1 2026</span><span class="l" data-i="44">Total revenues</span><b class="cntup" id="k-rev" data-v="4.52" data-d="2">$4.52M</b><span class="d" id="k-rev-d">vs $5.19M in H1 2025</span></div>
 <div class="card spot kpi"><span class="tag">H1 2026</span><span class="l" data-i="45">API-based services revenue</span><b class="cntup" data-v="1.10" data-d="2">$1.10M</b><span class="d">First recognized in Q2 2026</span></div>
-<div class="card spot kpi"><span class="tag">JUN 30</span><span class="l" data-i="46">Cash and cash equivalents</span><b class="cntup" data-v="34.6" data-d="1">$34.6M</b><span class="d">$6.7M at Dec 31, 2025</span></div>
-<div class="card spot kpi"><span class="tag">JUN 30</span><span class="l" data-i="47">Total assets</span><b class="cntup" data-v="121.1" data-d="1">$121.1M</b><span class="d">$35.5M at Dec 31, 2025</span></div>
+<div class="card spot kpi"><span class="tag" id="k-cash-t">JUN 30</span><span class="l" data-i="46">Cash and cash equivalents</span><b class="cntup" id="k-cash" data-v="34.6" data-d="1">$34.6M</b><span class="d" id="k-cash-d">$6.7M at Dec 31, 2025</span></div>
+<div class="card spot kpi"><span class="tag" id="k-assets-t">JUN 30</span><span class="l" data-i="47">Total assets</span><b class="cntup" id="k-assets" data-v="121.1" data-d="1">$121.1M</b><span class="d" id="k-assets-d">$35.5M at Dec 31, 2025</span></div>
 </div>
 <div class="fin">
 <div class="card chart"><h3 id="ctitle">Quarterly revenue</h3><span class="cs" id="csub"></span><div id="chart"></div></div>
@@ -537,7 +537,7 @@ var nm=LANGS.filter(function(x){return x[0]===l})[0];$('#lbtn').textContent=nm?n
 $$('#lmenu button').forEach(function(b){b.setAttribute('aria-current',b.dataset.l===l)});
 try{localStorage.setItem('xmax-lang',l)}catch(e){}
 words=[t(20),t(21),t(22),t(23)];wi=0;ci=0;del=false;if(RM)$('#typed').textContent=words[0];
-mk();rf();rn();if($('#chart').innerHTML)setP(curP);renderOwn();buildMnav();buildQL();buildFaqCats();rq();oTabs();tz(document.body);}
+mk();rf();rn();if($('#chart').innerHTML)setP(curP);renderOwn();if(FLIVE)kpiRender();buildMnav();buildQL();buildFaqCats();rq();oTabs();tz(document.body);}
 $('#lmenu').innerHTML=LANGS.map(function(x){return '<button role="menuitem" data-l="'+x[0]+'" lang="'+x[0]+'">'+x[1]+'</button>'}).join('');
 $('#lbtn').onclick=function(e){e.stopPropagation();var m=$('#lmenu'),o=m.classList.toggle('open');this.setAttribute('aria-expanded',o)};
 $$('#lmenu button').forEach(function(b){b.onclick=function(){applyLang(b.dataset.l);$('#lmenu').classList.remove('open')}});
@@ -653,12 +653,34 @@ $('#rbody').innerHTML=R.map(function(r){return '<tr><td class="mono">'+r[0]+'</t
 function buildQL(){var Q=[['financials',41,'M3 20V10M9 20V4M15 20v-7M21 20V8'],['filings',9,'M6 2h9l5 5v15H6zM14 2v6h6'],['ownership',11,'M12 3a9 9 0 1 0 9 9h-9z'],['news',6,'M4 5h16v14H4zM8 9h8M8 13h5'],['presentations',13,'M3 4h18v12H3zM8 21h8M12 16v5'],['governance',12,'M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z']];
 $('#ql').innerHTML=Q.map(function(q){return '<a class="card spot qc" href="#'+q[0]+'"><span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.8" stroke-linejoin="round"><path d="'+q[2]+'"/></svg></span><span>'+t(q[1])+'</span><i>→</i></a>'}).join('');spot()}
 
-/* ===== financial chart + table ===== */
-var Q={l:['Q1 25','Q2 25','Q3 25','Q4 25*','Q1 26','Q2 26'],v:[2.64,2.56,9.76,1.76,1.78,2.74]},Y={l:['FY 2024','FY 2025','H1 2026'],v:[9.69,16.72,4.52]};
-var TQ='<thead><tr><th>QUARTER</th><th class="n">REVENUE</th><th class="n">NET INCOME (LOSS)</th></tr></thead><tbody>'+
-[['Q2 2026','$2.74M','$32.43M','pos'],['Q1 2026','$1.78M','$0.19M','pos'],['Q4 2025*','$1.76M','($1.66M)','neg'],['Q3 2025','$9.76M','($1.13M)','neg'],['Q2 2025','$2.56M','($0.29M)','neg'],['Q1 2025','$2.64M','($0.34M)','neg']].map(function(r){return '<tr><td>'+r[0]+'</td><td class="n">'+r[1]+'</td><td class="n '+r[3]+'">'+r[2]+'</td></tr>'}).join('')+'</tbody>';
-var TA='<thead><tr><th>METRIC</th><th class="n">FY 2024</th><th class="n">FY 2025</th><th class="n">H1 2026</th></tr></thead><tbody>'+
-[['Total revenues','$9.69M','$16.72M','$4.52M'],['Net income (loss)','($5.56M)','($3.42M)','$32.62M'],['Cash, period end','$0.16M','$6.71M','$34.63M'],['Total assets, period end','$9.92M','$35.55M','$121.08M']].map(function(r){return '<tr><td>'+r[0]+'</td><td class="n'+(r[1][0]==='('?' neg':'')+'">'+r[1]+'</td><td class="n'+(r[2][0]==='('?' neg':'')+'">'+r[2]+'</td><td class="n">'+r[3]+'</td></tr>'}).join('')+'</tbody>';
+/* ===== financial chart + table (static snapshot, replaced by live SEC XBRL data when available) ===== */
+var FD={q:[[2025,1,2.64,-0.34,0],[2025,2,2.56,-0.29,0],[2025,3,9.76,-1.13,0],[2025,4,1.76,-1.66,1],[2026,1,1.78,0.19,0],[2026,2,2.74,32.43,0]],
+a:[[2024,9.69,-5.56,0.16,9.92],[2025,16.72,-3.42,6.71,35.55]],
+lt:{end:'2026-06-30',y:2026,months:6,rev:4.52,revPrior:5.19,ni:32.62,cash:34.63,cashPrevYE:6.71,assets:121.08,assetsPrevYE:35.55}};
+var FLIVE=false;
+function isZh(){return L==='zh-Hans'||L==='zh-Hant'}
+var QN=['一','二','三','四'];
+function qLab(y,q,d){return (isZh()?y+'年第'+QN[q-1]+'季度':'Q'+q+' '+y)+(d?'*':'')}
+function qShort(y,q,d){return (isZh()?String(y).slice(2)+'Q'+q:'Q'+q+' '+String(y).slice(2))+(d?'*':'')}
+function fyLab(y){return isZh()?y+(L==='zh-Hant'?'財年':'财年'):'FY '+y}
+function ytdLab(y,m){if(m>=12)return fyLab(y);if(isZh())return y+'年'+(m<=3?'第一季度':m<=6?'上半年':'前三季度');return (m<=3?'Q1 ':m<=6?'H1 ':'9M ')+y}
+function mny(v){return v==null?'—':(v<0?'($'+Math.abs(v).toFixed(2)+'M)':'$'+v.toFixed(2)+'M')}
+function dLab(s){var d=new Date(s+'T12:00:00Z');return isZh()?(d.getUTCMonth()+1)+'月'+d.getUTCDate()+'日':d.toLocaleDateString('en-US',{month:'short',day:'numeric',timeZone:'UTC'}).toUpperCase()}
+function dLong(s){var d=new Date(s+'T12:00:00Z');return isZh()?d.getUTCFullYear()+'年'+(d.getUTCMonth()+1)+'月'+d.getUTCDate()+'日':d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric',timeZone:'UTC'})}
+function ytdCol(){return FD.lt.months<12}
+function buildQ(){return {l:FD.q.map(function(r){return qShort(r[0],r[1],r[4])}),v:FD.q.map(function(r){return r[2]})}}
+function buildY(){var l=FD.a.map(function(r){return fyLab(r[0])}),v=FD.a.map(function(r){return r[1]});if(ytdCol()){l.push(ytdLab(FD.lt.y,FD.lt.months));v.push(FD.lt.rev)}return {l:l,v:v}}
+function buildTQ(){return '<thead><tr><th>QUARTER</th><th class="n">REVENUE</th><th class="n">NET INCOME (LOSS)</th></tr></thead><tbody>'+FD.q.slice().reverse().map(function(r){return '<tr><td>'+qLab(r[0],r[1],r[4])+'</td><td class="n">'+mny(r[2])+'</td><td class="n '+(r[3]<0?'neg':'pos')+'">'+mny(r[3])+'</td></tr>'}).join('')+'</tbody>'}
+function buildTA(){var cols=FD.a.map(function(r){return fyLab(r[0])});if(ytdCol())cols.push(ytdLab(FD.lt.y,FD.lt.months));
+var rows=[['Total revenues',1,'rev'],['Net income (loss)',2,'ni'],['Cash, period end',3,'cash'],['Total assets, period end',4,'assets']];
+return '<thead><tr><th>METRIC</th>'+cols.map(function(c){return '<th class="n">'+c+'</th>'}).join('')+'</tr></thead><tbody>'+rows.map(function(r){var cells=FD.a.map(function(a){return a[r[1]]});if(ytdCol())cells.push(FD.lt[r[2]]);return '<tr><td>'+r[0]+'</td>'+cells.map(function(v){return '<td class="n'+(v<0?' neg':'')+'">'+mny(v)+'</td>'}).join('')+'</tr>'}).join('')+'</tbody>'}
+function csubText(p){var anyD=FD.q.some(function(r){return r[4]}),u=isZh()?'百万美元':'US$ M';
+if(p==='q'){var f=FD.q[0],l=FD.q[FD.q.length-1];return qLab(f[0],f[1])+' – '+qLab(l[0],l[1])+' · '+u+(anyD?(isZh()?' · *为推算值':' · *derived'):'')}
+var y=buildY().l;return y[0]+' – '+y[y.length-1]+' · '+u}
+function kpiRender(){var lt=FD.lt,z=isZh();function set(id,v,d){var e=$('#'+id);if(!e)return;e.dataset.v=v;e.textContent='$'+v.toFixed(d)+'M'}
+if(lt.rev!=null){set('k-rev',lt.rev,2);$('#k-rev-t').textContent=z?ytdLab(lt.y,lt.months):ytdLab(lt.y,lt.months).toUpperCase();$('#k-rev-d').textContent=lt.revPrior!=null?(z?ytdLab(lt.y-1,lt.months)+'为 '+mny(lt.revPrior):'vs '+mny(lt.revPrior)+' in '+ytdLab(lt.y-1,lt.months)):''}
+if(lt.cash!=null){set('k-cash',lt.cash,1);$('#k-cash-t').textContent=dLab(lt.end);$('#k-cash-d').textContent=lt.cashPrevYE!=null?(z?dLong((lt.y-1)+'-12-31')+'为 $'+lt.cashPrevYE.toFixed(1)+'M':'$'+lt.cashPrevYE.toFixed(1)+'M at '+dLong((lt.y-1)+'-12-31')):''}
+if(lt.assets!=null){set('k-assets',lt.assets,1);$('#k-assets-t').textContent=dLab(lt.end);$('#k-assets-d').textContent=lt.assetsPrevYE!=null?(z?dLong((lt.y-1)+'-12-31')+'为 $'+lt.assetsPrevYE.toFixed(1)+'M':'$'+lt.assetsPrevYE.toFixed(1)+'M at '+dLong((lt.y-1)+'-12-31')):''}}
 var tip=$('#tip'),curP='q';
 function chart(Dt){var w=600,h=260,pb=34,pt=16,mx=Math.ceil(Math.max.apply(0,Dt.v)/5)*5,n=Dt.v.length,gap=(w-40)/n,bw=Math.min(64,gap*.55);
 var s='<svg viewBox="0 0 '+w+' '+h+'" role="img"><defs><linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#45c8ff"/><stop offset="1" stop-color="#8b7bff" stop-opacity=".55"/></linearGradient></defs>';
@@ -668,8 +690,7 @@ $('#chart').innerHTML=s+'</svg>';
 $$('#chart .bar').forEach(function(b,i){b.addEventListener('mousemove',function(e){tip.innerHTML='<span style="color:var(--muted)">'+b.dataset.l+'</span><b>'+b.dataset.v+'</b>';tip.style.left=(e.clientX+14)+'px';tip.style.top=(e.clientY-14)+'px';tip.style.opacity=1});b.addEventListener('mouseleave',function(){tip.style.opacity=0});
 var go=function(){b.setAttribute('y',b.dataset.y);b.setAttribute('height',b.dataset.h)};if(RM)go();else{b.style.transition='y .9s cubic-bezier(.2,.7,.2,1) '+(i*70)+'ms, height .9s cubic-bezier(.2,.7,.2,1) '+(i*70)+'ms';requestAnimationFrame(function(){requestAnimationFrame(go)})}})}
 function setP(p){curP=p;$$('.tabs[role=tablist] button[data-p]').forEach(function(b){b.setAttribute('aria-selected',b.dataset.p===p)});
-if(p==='q'){$('#ctitle').textContent=t(48);$('#csub').textContent='Q1 2025 – Q2 2026 · US$ M · *derived';chart(Q);$('#ftable').innerHTML=TQ}
-else{$('#ctitle').textContent=t(49);$('#csub').textContent='FY 2024 – H1 2026 · US$ M';chart(Y);$('#ftable').innerHTML=TA}}
+$('#ctitle').textContent=t(p==='q'?48:49);$('#csub').textContent=csubText(p);chart(p==='q'?buildQ():buildY());$('#ftable').innerHTML=p==='q'?buildTQ():buildTA()}
 $$('button[data-p]').forEach(function(b){b.onclick=function(){setP(b.dataset.p)}});
 
 /* ===== institutional ownership (Nasdaq, 13F) ===== */
@@ -760,6 +781,7 @@ addEventListener('scroll',sc,{passive:true});tb.onclick=function(){scrollTo({top
 /* ===== live data (works when deployed with the data worker on the company domain) ===== */
 function getJSON(u){return new Promise(function(res){try{var c=new AbortController(),tmo=setTimeout(function(){c.abort()},6000);fetch(u,{cache:'no-store',signal:c.signal}).then(function(r){clearTimeout(tmo);return r.ok?r.json():null}).then(res).catch(function(){res(null)})}catch(e){res(null)}})}
 function loadLive(){
+getJSON('/api/financials').then(function(j){var d=j&&j.data;if(!d||!d.quarters||!d.quarters.length)return;FD={q:d.quarters.map(function(x){return [x.y,x.q,x.rev,x.ni,x.derived?1:0]}),a:(d.annual||[]).map(function(x){return [x.y,x.rev,x.ni,x.cash,x.assets]}),lt:d.latest||FD.lt};FLIVE=true;kpiRender();if($('#chart').innerHTML)setP(curP);$('#fnsrc').innerHTML='<span class="dot open"></span>LIVE · SEC XBRL'+(d.latest&&d.latest.form?' · '+d.latest.form+' '+d.latest.filed:'')});
 getJSON('/api/news').then(function(j){if(!j||!j.data||!j.data.length)return;var extra=N.filter(function(n){return !n[4]&&!/news-release\/\d{4}/.test(n[2])});N=j.data.map(function(x){return [x.date,x.title,x.url,x.cat,x.id]}).concat(extra).sort(function(a,b){return a[0]<b[0]?1:a[0]>b[0]?-1:0});var seen={};N=N.filter(function(n){var k=n[0]+'|'+String(n[1]).toLowerCase();if(seen[k])return false;seen[k]=1;return true});rn()});
 getJSON(API.filings).then(function(j){if(!j||!j.data||!j.data.length)return;if(!F0)F0=F.slice();var mp={};F0.forEach(function(r){if(r[2]!=='Current report')mp[r[0]+'|'+r[1]]=r[2]});F=j.data.map(function(x){return [x.date,x.form,mp[x.date+'|'+x.form]||x.desc||x.form,x.period||'',x.url||'']});rf();var tg=$('#fsrc');tg.innerHTML='<span class="dot open"></span>LIVE · SEC EDGAR';});
 getJSON(API.quote).then(function(j){var d=j&&j.data;if(!d||typeof d.price!=='number')return;
