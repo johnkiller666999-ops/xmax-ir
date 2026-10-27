@@ -428,7 +428,6 @@ html:not([lang="en"]) .lnote{display:block}
 <div class="card" style="padding:24px"><div class="stat"><span>Exchange</span><em>Nasdaq Capital Market</em></div><div class="stat"><span>Ticker</span><em>XMAX</em></div><div class="stat"><span>Former ticker</span><em>XWIN (until May 18, 2026)</em></div><div class="stat"><span>SEC CIK</span><em>0001473334</em></div><div class="stat"><span data-i="30">Fiscal year end</span><em>December 31</em></div><div class="stat"><span>Index membership</span><em>Russell 3000 (from Jun 2026)</em></div></div>
 </div>
 <div class="card tvw" id="tvw" aria-label="XMAX price chart"></div>
-<p class="src">Quotes will be delayed and supplied by a licensed market data provider once the site is launched on the company’s domain.</p>
 </div></section>
 <section id="ownership"><div class="wrap rv">
 <div class="sh"><div><span class="no">02</span><h2 data-i="11">Institutional Ownership</h2><p class="sub">SEC Form 13F positions for the quarter ended June 30, 2026, with changes from the prior filing.</p></div></div>
@@ -794,7 +793,7 @@ var lastPx=null;
 function loadQuote(){getJSON(API.quote).then(function(j){var d=j&&j.data;if(!d||typeof d.price!=='number')return;
 var fl=lastPx==null||d.price===lastPx?'':(d.price>lastPx?'fu':'fdn');lastPx=d.price;$$('.px').forEach(function(e){e.textContent='$'+d.price.toFixed(2);e.classList.add('live');if(fl){e.classList.remove('fu','fdn');void e.offsetWidth;e.classList.add(fl)}});
 $$('.pxc').forEach(function(e){var up=d.change>=0;e.textContent=(up?'+':'')+d.change.toFixed(2)+' ('+(up?'+':'')+d.changePct.toFixed(2)+'%)';e.className='chg pxc '+(up?'pos':'neg')});
-$$('.pxb').forEach(function(e){e.style.display='none'});$$('.pxt').forEach(function(e){e.textContent=' · '+new Date(d.time).toLocaleString(L==='en'?'en-US':L,{timeZone:'America/New_York',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})+' ET'+(d.source?' · '+d.source:'')})})}
+$$('.pxb').forEach(function(e){e.style.display='none'});$$('.pxt').forEach(function(e){e.textContent=' · '+new Date(d.time).toLocaleString(L==='en'?'en-US':L,{timeZone:'America/New_York',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})+' ET'})})}
 function qLoop(){var live=/open|ext/.test($('#mdot').className);if(!document.hidden)loadQuote();setTimeout(qLoop,live?5000:60000)}
 document.addEventListener('visibilitychange',function(){if(!document.hidden)loadQuote()});
 
