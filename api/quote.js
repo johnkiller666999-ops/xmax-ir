@@ -20,7 +20,7 @@ module.exports = async (req, res) => {
     if (!r.ok) return fail('provider_error: HTTP ' + r.status);
     const q = await r.json(); // { c: price, d: change, dp: change %, pc: previous close, t: unix seconds }
     if (!q || typeof q.c !== 'number' || q.c === 0) return fail('no_data: the provider returned no price for ' + SYMBOL);
-    res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate=600');
+    res.setHeader('Cache-Control', 's-maxage=5, stale-while-revalidate=30');
     res.status(200).json({
       ts: Date.now(),
       data: {
