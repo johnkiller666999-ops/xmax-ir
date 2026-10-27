@@ -273,6 +273,8 @@ html:not([lang="en"]) .lnote{display:block}
 #top-btn.show{opacity:1;transform:none}#top-btn svg{position:absolute;inset:0}
 .rv{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease}.rv.in{opacity:1;transform:none}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.hero::before,.mqt,.dot.open,.flow,.type::after,.view.on{animation:none}.rv{opacity:1;transform:none;transition:none}.track,.tr .bt i{transition:none}.mq-in{overflow-x:auto}}
+.px.fu{animation:fu 1s ease}.px.fdn{animation:fdn 1s ease}@keyframes fu{0%{color:var(--good);text-shadow:0 0 14px var(--good)}}@keyframes fdn{0%{color:var(--bad);text-shadow:0 0 14px var(--bad)}}
+.tvw{margin-top:20px;height:460px;padding:0}
 </style>
 </head>
 <body>
@@ -425,6 +427,7 @@ html:not([lang="en"]) .lnote{display:block}
 <div class="stat"><span data-i="26">Shares outstanding</span><em>64,875,626</em></div><div class="stat"><span data-i="27">As of</span><em>Sep 15, 2026</em></div></div>
 <div class="card" style="padding:24px"><div class="stat"><span>Exchange</span><em>Nasdaq Capital Market</em></div><div class="stat"><span>Ticker</span><em>XMAX</em></div><div class="stat"><span>Former ticker</span><em>XWIN (until May 18, 2026)</em></div><div class="stat"><span>SEC CIK</span><em>0001473334</em></div><div class="stat"><span data-i="30">Fiscal year end</span><em>December 31</em></div><div class="stat"><span>Index membership</span><em>Russell 3000 (from Jun 2026)</em></div></div>
 </div>
+<div class="card tvw" id="tvw" aria-label="XMAX price chart"></div>
 <p class="src">Quotes will be delayed and supplied by a licensed market data provider once the site is launched on the company’s domain.</p>
 </div></section>
 <section id="ownership"><div class="wrap rv">
@@ -560,7 +563,7 @@ var MAP={overview:'overview',news:'news',events:'news',financials:'financials',r
 var TOPS={overview:1,financials:1,governance:1};
 function route(){var h=(location.hash||'').slice(1),v=MAP[h]||'overview';
 $$('.view').forEach(function(x){x.classList.toggle('on',x.dataset.view===v)});
-$$('.ni>a').forEach(function(a){a.classList.toggle('on',a.dataset.v===v)});
+$$('.ni>a').forEach(function(a){a.classList.toggle('on',a.dataset.v===v)});if(v==='stock')setTimeout(loadTV,120);
 $('#mnav').classList.remove('open');
 var target=(!h||TOPS[h]||h==='news'&&false)?null:document.getElementById(h);
 if(target&&!(h==='news'||h==='quote'||h==='presentations')){setTimeout(function(){target.scrollIntoView({behavior:RM?'auto':'smooth'})},60)}else{scrollTo({top:0,behavior:'auto'})}
@@ -642,7 +645,7 @@ var N=[['2026-10-09','XMax to acquire Hexa Creation, developer of 1200V vertical
 ['2026-04-08','XMax advances AI strategy through development and deployment of an AI inference platform',NW+'2026/04/08/3270540/37029/en/XMax-Advances-AI-Strategy-Through-Development-and-Deployment-of-An-AI-Inference-Platform.html','AI'],
 ['2026-04-06','XMax announces formation of XMax AI Inc. to execute AI expansion strategy',NW+'2026/04/06/3268739/37029/en/xmax-announces-formation-of-xmax-ai-inc-to-execute-ai-expansion-strategy.html','AI'],
 ['2026-03-24','XMax announces strategic expansion into artificial intelligence to drive growth and diversification',NW+'2026/03/24/3261791/37029/en/XMax-Announces-Strategic-Expansion-Into-Artificial-Intelligence-to-Drive-Growth-and-Diversification.html','AI']];
-function nl(n){var m=/news-release\/\d{4}\/\d{2}\/\d{2}\/(\d+)\//.exec(n[2]),id=n[4]||(m&&m[1]);if(!id||!/^https?:$/.test(location.protocol))return n[2];return '/news/'+id+(L==='zh-Hans'||L==='zh-Hant'?'?lang='+L:'')}
+function nl(n){var m=/news-release\/\d{4}\/\d{2}\/\d{2}\/(\d+)\//.exec(n[2]),id=n[4]||(m&&m[1]);if(!id||!/^https?:$/.test(location.protocol))return n[2];return '/news/'+id+(L!=='en'?'?lang='+L:'')}
 var shown=7;function rn(){$('#tl').innerHTML=N.slice(0,shown).map(function(n){return '<div class="ti"><time>'+fd(n[0])+'</time> <span>· <span>'+n[3]+'</span></span><a href="'+nl(n)+'" target="_blank" rel="noopener">'+n[1]+'</a></div>'}).join('');$('#more').hidden=shown>=N.length;
 $('#ovnews').innerHTML=N.slice(0,5).map(function(n){return '<a class="li" href="'+nl(n)+'" target="_blank" rel="noopener"><span class="lm">'+fd(n[0])+' · <span>'+n[3]+'</span></span><span class="lt">'+n[1]+'</span></a>'}).join('')}
 $('#more').onclick=function(){shown=N.length;rn()};
@@ -784,16 +787,31 @@ function loadLive(){
 getJSON('/api/financials').then(function(j){var d=j&&j.data;if(!d||!d.quarters||!d.quarters.length)return;FD={q:d.quarters.map(function(x){return [x.y,x.q,x.rev,x.ni,x.derived?1:0]}),a:(d.annual||[]).map(function(x){return [x.y,x.rev,x.ni,x.cash,x.assets]}),lt:d.latest||FD.lt};FLIVE=true;kpiRender();if($('#chart').innerHTML)setP(curP);$('#fnsrc').innerHTML='<span class="dot open"></span>LIVE · SEC XBRL'+(d.latest&&d.latest.form?' · '+d.latest.form+' '+d.latest.filed:'')});
 getJSON('/api/news').then(function(j){if(!j||!j.data||!j.data.length)return;var extra=N.filter(function(n){return !n[4]&&!/news-release\/\d{4}/.test(n[2])});N=j.data.map(function(x){return [x.date,x.title,x.url,x.cat,x.id]}).concat(extra).sort(function(a,b){return a[0]<b[0]?1:a[0]>b[0]?-1:0});var seen={};N=N.filter(function(n){var k=n[0]+'|'+String(n[1]).toLowerCase();if(seen[k])return false;seen[k]=1;return true});rn()});
 getJSON(API.filings).then(function(j){if(!j||!j.data||!j.data.length)return;if(!F0)F0=F.slice();var mp={};F0.forEach(function(r){if(r[2]!=='Current report')mp[r[0]+'|'+r[1]]=r[2]});F=j.data.map(function(x){return [x.date,x.form,mp[x.date+'|'+x.form]||x.desc||x.form,x.period||'',x.url||'']});rf();var tg=$('#fsrc');tg.innerHTML='<span class="dot open"></span>LIVE · SEC EDGAR';});
-getJSON(API.quote).then(function(j){var d=j&&j.data;if(!d||typeof d.price!=='number')return;
-$$('.px').forEach(function(e){e.textContent='$'+d.price.toFixed(2);e.classList.add('live')});
+;}
+
+/* ===== stock quote: every 5 s while the market is in session, every 60 s otherwise ===== */
+var lastPx=null;
+function loadQuote(){getJSON(API.quote).then(function(j){var d=j&&j.data;if(!d||typeof d.price!=='number')return;
+var fl=lastPx==null||d.price===lastPx?'':(d.price>lastPx?'fu':'fdn');lastPx=d.price;$$('.px').forEach(function(e){e.textContent='$'+d.price.toFixed(2);e.classList.add('live');if(fl){e.classList.remove('fu','fdn');void e.offsetWidth;e.classList.add(fl)}});
 $$('.pxc').forEach(function(e){var up=d.change>=0;e.textContent=(up?'+':'')+d.change.toFixed(2)+' ('+(up?'+':'')+d.changePct.toFixed(2)+'%)';e.className='chg pxc '+(up?'pos':'neg')});
-$$('.pxb').forEach(function(e){e.style.display='none'});$$('.pxt').forEach(function(e){e.textContent=' · '+new Date(d.time).toLocaleString(L==='en'?'en-US':L,{timeZone:'America/New_York',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})+' ET'+(d.source?' · '+d.source:'')})});}
+$$('.pxb').forEach(function(e){e.style.display='none'});$$('.pxt').forEach(function(e){e.textContent=' · '+new Date(d.time).toLocaleString(L==='en'?'en-US':L,{timeZone:'America/New_York',month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})+' ET'+(d.source?' · '+d.source:'')})})}
+function qLoop(){var live=/open|ext/.test($('#mdot').className);if(!document.hidden)loadQuote();setTimeout(qLoop,live?5000:60000)}
+document.addEventListener('visibilitychange',function(){if(!document.hidden)loadQuote()});
+
+/* ===== TradingView chart widget (official free embed, with attribution) ===== */
+var tvDone=false;
+function loadTV(){if(tvDone||!/^https?:$/.test(location.protocol))return;tvDone=true;
+var loc={'en':'en','fr':'fr','ru':'ru','zh-Hans':'zh_CN','zh-Hant':'zh_TW','ar':'ar_AE','ja':'ja','de':'de_DE','pt':'br','it':'it','ko':'kr'}[L]||'en';
+var c=$('#tvw');c.innerHTML='<div class="tradingview-widget-container" style="height:100%"><div class="tradingview-widget-container__widget" style="height:calc(100% - 30px)"></div><div class="tradingview-widget-copyright" style="font-size:12px;padding:6px 16px;color:var(--muted)"><a href="https://www.tradingview.com/symbols/NASDAQ-XMAX/" rel="noopener nofollow" target="_blank">XMAX chart</a> by TradingView</div></div>';
+var sc2=document.createElement('script');sc2.src='https://s3.tradingview.com/external-embedding/embed-widget-symbol-overview.js';sc2.async=true;
+sc2.text=JSON.stringify({symbols:[['XMax Inc.','NASDAQ:XMAX|1D']],chartOnly:false,width:'100%',height:'100%',locale:loc,colorTheme:'dark',autosize:true,showVolume:true,showMA:false,hideDateRanges:false,hideMarketStatus:false,hideSymbolLogo:true,scalePosition:'right',scaleMode:'Normal',fontFamily:'IBM Plex Sans, sans-serif',fontSize:'10',noTimeScale:false,valuesTracking:'1',changeMode:'price-and-percent',chartType:'area',lineWidth:2,lineType:0,lineColor:'#45c8ff',topColor:'rgba(69,200,255,0.30)',bottomColor:'rgba(69,200,255,0)',backgroundColor:'rgba(12,21,40,1)',gridLineColor:'rgba(28,42,74,0.6)',widgetFontColor:'#8e9bbd',dateRanges:['1d|1','1m|30','3m|60','12m|1D','60m|1W','all|1M']});
+c.firstChild.appendChild(sc2)}
 
 /* ===== init ===== */
 rf();rn();oTabs();spot();
 var saved='en';try{saved=localStorage.getItem('xmax-lang')||'en'}catch(e){}
 applyLang(saved);if(!RM)ty();
-route();sc();go(0);play();loadLive();setInterval(loadLive,120000);
+route();sc();go(0);play();loadLive();setInterval(loadLive,120000);setTimeout(qLoop,1500);
 })();
 </script>
 </body>
