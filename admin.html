@@ -22,6 +22,7 @@ label{display:block;font-size:13px;color:var(--muted);margin:12px 0 6px}
 .btn:hover{border-color:var(--accent)}.btn.p{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#04101f;border:0}
 .btn.s{padding:6px 10px;font-size:13px}.btn.d{color:var(--bad)}
 .btn:disabled{opacity:.45;cursor:default}
+.btn.pulse{animation:pulse 1.6s ease-in-out infinite}@keyframes pulse{50%{box-shadow:0 0 0 6px color-mix(in srgb,var(--accent) 35%,transparent)}}
 .row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}@media(max-width:720px){.row{grid-template-columns:1fr}}
 .tabs{display:flex;gap:6px;margin-top:18px}.tabs button{border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:10px;padding:9px 16px;cursor:pointer;font:500 14px system-ui,sans-serif}
 .tabs button[aria-selected="true"]{background:var(--surface2);color:var(--text)}
@@ -70,14 +71,15 @@ label{display:block;font-size:13px;color:var(--muted);margin:12px 0 6px}
 <div><label>图标</label><select id="f_icon"><option value="deck">演示文稿</option><option value="ai">AI / 星形</option><option value="doc">文档</option><option value="download">下载</option></select></div>
 </div>
 </div>
-<label>文件</label>
-<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center"><input id="f_file" type="file" accept=".pdf,.ppt,.pptx,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg" style="flex:1;min-width:220px"><button class="btn" id="upBtn">上传文件</button></div>
+<label>文件（选择后自动上传）</label>
+<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center"><input id="f_file" type="file" accept=".pdf,.ppt,.pptx,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg" style="flex:1;min-width:220px"><button class="btn" id="upBtn">重新上传</button></div>
 <div class="prog" id="prog"><i></i></div>
 <label>或者直接填写文件链接（上传后会自动填入）</label>
-<input id="f_url" placeholder="https://...">
+<div style="display:flex;gap:10px;flex-wrap:wrap"><input id="f_url" placeholder="https://..." style="flex:1;min-width:220px"><button class="btn d" id="clearBtn" type="button">移除文件</button></div>
 <div class="row"><div><label>按钮文字（可留空，默认"PDF"或"下载"）</label><input id="f_label" placeholder="例如 PDF、EDGAR"></div></div>
 <div class="muted" id="emptyHint" style="margin-top:8px">简报资料不填链接时，网站上会显示"准备中"。</div>
-<div style="margin-top:16px;display:flex;gap:10px"><button class="btn p" id="okBtn">确定</button><button class="btn" id="cancelBtn">取消</button><span class="msg" id="formMsg"></span></div>
+<div style="margin-top:16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap"><button class="btn p" id="okBtn">完成编辑（还需发布）</button><button class="btn" id="cancelBtn">取消</button><span class="msg" id="formMsg"></span></div>
+<div class="muted" style="margin-top:10px">选好文件会自动上传。编辑完成后，记得点页面底部的"保存并发布"，官网才会更新。</div>
 </div>
 
 <div class="bar"><span class="msg" id="saveMsg">尚未修改</span><div style="display:flex;gap:10px"><a class="btn" href="/" target="_blank" rel="noopener">查看网站 ↗</a><button class="btn p" id="saveBtn" disabled>保存并发布</button></div></div>
@@ -90,7 +92,7 @@ const $ = (s) => document.querySelector(s);
 let PW = '', DATA = null, SEC = 'governance', EDIT = -1, DIRTY = false;
 const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const uid = () => Math.random().toString(36).slice(2, 10);
-function setDirty(v) { DIRTY = v; $('#saveBtn').disabled = !v; $('#saveMsg').className = 'msg'; $('#saveMsg').textContent = v ? '有未发布的修改' : '尚未修改'; }
+function setDirty(v) { DIRTY = v; $('#saveBtn').disabled = !v; $('#saveBtn').classList.toggle('pulse', v); $('#saveMsg').className = 'msg'; $('#saveMsg').textContent = v ? '有未发布的修改，请点右边的“保存并发布”' : '尚未修改'; }
 addEventListener('beforeunload', (e) => { if (DIRTY) { e.preventDefault(); e.returnValue = ''; } });
 
 async function login() {
@@ -138,31 +140,43 @@ function openForm(i) {
   $('#f_den').value = (x.desc || {}).en || ''; $('#f_dzhs').value = (x.desc || {}).zhs || ''; $('#f_dzht').value = (x.desc || {}).zht || '';
   $('#f_icon').value = x.icon || 'doc'; $('#f_url').value = x.url || ''; $('#f_label').value = x.label || ''; $('#f_file').value = '';
   $('#presFields').hidden = SEC !== 'presentations'; $('#emptyHint').hidden = SEC !== 'presentations';
-  $('#formMsg').textContent = ''; $('#form').hidden = false; $('#form').scrollIntoView({ behavior: 'smooth' });
+  $('#formMsg').textContent = ''; UPLOADED_FOR = null; $('#prog').style.display = 'none'; $('#form').hidden = false; $('#form').scrollIntoView({ behavior: 'smooth' });
 }
 function closeForm() { $('#form').hidden = true; EDIT = -1; }
 $('#addBtn').onclick = () => openForm(-1);
 $('#cancelBtn').onclick = closeForm;
 
-$('#upBtn').onclick = async () => {
+let UPLOADING = null, UPLOADED_FOR = null;
+async function doUpload() {
   const f = $('#f_file').files[0];
-  if (!f) { $('#formMsg').className = 'msg err'; $('#formMsg').textContent = '请先选择文件'; return; }
-  $('#upBtn').disabled = true; $('#prog').style.display = 'block'; $('#prog i').style.width = '5%';
-  $('#formMsg').className = 'msg'; $('#formMsg').textContent = '上传中…';
-  try {
-    if (!uploadFn) uploadFn = (await import('https://esm.sh/@vercel/blob@2.8.2/client')).upload;
-    const safe = f.name.replace(/[^\w.\-]+/g, '-');
-    const blob = await uploadFn('docs/' + safe, f, {
-      access: 'public', handleUploadUrl: '/api/upload', clientPayload: PW, multipart: f.size > 8 * 1024 * 1024,
-      onUploadProgress: (p) => { $('#prog i').style.width = Math.max(5, p.percentage) + '%'; },
-    });
-    $('#f_url').value = blob.url; $('#prog i').style.width = '100%';
-    $('#formMsg').className = 'msg ok'; $('#formMsg').textContent = '上传成功，点"确定"后再"保存并发布"';
-  } catch (e) { $('#formMsg').className = 'msg err'; $('#formMsg').textContent = '上传失败：' + (e.message || e); }
-  $('#upBtn').disabled = false;
-};
+  if (!f) { $('#formMsg').className = 'msg err'; $('#formMsg').textContent = '请先选择文件'; return false; }
+  if (UPLOADED_FOR === f) return true;
+  if (UPLOADING) return UPLOADING;
+  UPLOADING = (async () => {
+    $('#upBtn').disabled = true; $('#okBtn').disabled = true; $('#prog').style.display = 'block'; $('#prog i').style.width = '5%';
+    $('#formMsg').className = 'msg'; $('#formMsg').textContent = '上传中…';
+    try {
+      if (!uploadFn) uploadFn = (await import('https://esm.sh/@vercel/blob@2.8.2/client')).upload;
+      const clean = f.name.replace(/[\\/?#%*:|"<>\u0000-\u001f]+/g, ' ').replace(/\s+/g, ' ').trim().slice(-150) || 'file';
+      const d = new Date(), folder = d.getFullYear() + String(d.getMonth() + 1).padStart(2, '0') + String(d.getDate()).padStart(2, '0') + '-' + Math.random().toString(36).slice(2, 8);
+      const blob = await uploadFn('docs/' + folder + '/' + clean, f, {
+        access: 'public', handleUploadUrl: '/api/upload', clientPayload: PW, multipart: f.size > 8 * 1024 * 1024,
+        onUploadProgress: (p) => { $('#prog i').style.width = Math.max(5, p.percentage) + '%'; },
+      });
+      $('#f_url').value = blob.url; $('#prog i').style.width = '100%'; UPLOADED_FOR = f;
+      $('#formMsg').className = 'msg ok'; $('#formMsg').textContent = '上传成功';
+      return true;
+    } catch (e) { $('#formMsg').className = 'msg err'; $('#formMsg').textContent = '上传失败：' + (e.message || e); return false; }
+    finally { $('#upBtn').disabled = false; $('#okBtn').disabled = false; UPLOADING = null; }
+  })();
+  return UPLOADING;
+}
+$('#f_file').addEventListener('change', () => { UPLOADED_FOR = null; if ($('#f_file').files[0]) doUpload(); });
+$('#upBtn').onclick = () => { UPLOADED_FOR = null; doUpload(); };
+$('#clearBtn').onclick = () => { $('#f_url').value = ''; $('#f_file').value = ''; UPLOADED_FOR = null; $('#prog').style.display = 'none'; $('#formMsg').className = 'msg'; $('#formMsg').textContent = '已移除文件，完成编辑并发布后，官网上这一项会显示“准备中”（公司治理文件需要有文件）'; };
 
-$('#okBtn').onclick = () => {
+$('#okBtn').onclick = async () => {
+  if ($('#f_file').files[0] && UPLOADED_FOR !== $('#f_file').files[0]) { if (!(await doUpload())) return; }
   const ten = $('#f_ten').value.trim(), tzhs = $('#f_tzhs').value.trim();
   if (!ten || !tzhs) { $('#formMsg').className = 'msg err'; $('#formMsg').textContent = '请填写英文标题和简体中文标题'; return; }
   const url = $('#f_url').value.trim();
@@ -176,6 +190,7 @@ $('#okBtn').onclick = () => {
   }
   if (EDIT >= 0) DATA[SEC][EDIT] = x; else DATA[SEC].push(x);
   closeForm(); render(); setDirty(true);
+  $('#saveBtn').scrollIntoView({ behavior: 'smooth', block: 'center' });
 };
 
 $('#saveBtn').onclick = async () => {
