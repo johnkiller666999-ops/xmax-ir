@@ -19,7 +19,7 @@ module.exports = async (req, res) => {
       body, request,
       onBeforeGenerateToken: async (pathname, clientPayload) => {
         if (!process.env.ADMIN_PASSWORD || clientPayload !== process.env.ADMIN_PASSWORD) throw new Error('Unauthorized');
-        return { allowedContentTypes: ALLOWED, maximumSizeInBytes: 200 * 1024 * 1024, addRandomSuffix: true };
+        return { allowedContentTypes: ALLOWED, maximumSizeInBytes: 200 * 1024 * 1024, addRandomSuffix: false, allowOverwrite: false };
       },
     });
     return res.status(200).json(json);

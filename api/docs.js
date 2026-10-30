@@ -45,9 +45,22 @@ module.exports = async (req, res) => {
       if (!process.env.BLOB_READ_WRITE_TOKEN) return res.status(503).json({ error: 'storage_not_configured' });
       const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
       const data = sanitize(body || {});
-      const { put } = await import('@vercel/blob');
+      const { put, del } = await import('@vercel/blob');
+      const before = await readStored().catch(() => null);
+      // Files no longer listed are kept for 15 minutes (pages and caches may still link to them),
+      // then deleted during a later publish.
+      const GRACE = 15 * 60 * 1000, now = Date.now();
+      const urls = (m) => [...(m && m.governance || []), ...(m && m.presentations || [])].map((x) => x.url).filter(Boolean);
+      const isOurs = (u) => /\.blob\.vercel-storage\.com\//.test(u);
+      const keep = new Set(urls(data));
+      const trash = new Map(((before && before.trash) || []).filter((t) => t && t.url && !keep.has(t.url)).map((t) => [t.url, t.at]));
+      for (const u of urls(before)) if (!keep.has(u) && isOurs(u) && !trash.has(u)) trash.set(u, now);
+      const due = [...trash].filter(([, at]) => now - at >= GRACE).map(([u]) => u);
+      let removed = 0;
+      if (due.length) { try { await del(due); removed = due.length; due.forEach((u) => trash.delete(u)); } catch (e) { /* retried on the next publish */ } }
+      data.trash = [...trash].map(([url, at]) => ({ url, at }));
       await put(PATH, JSON.stringify(data), { access: 'public', addRandomSuffix: false, allowOverwrite: true, contentType: 'application/json', cacheControlMaxAge: 60 });
-      return res.status(200).json({ ok: true, data });
+      return res.status(200).json({ ok: true, data, removed });
     }
     if (q.check) {
       res.setHeader('Cache-Control', 'no-store');
