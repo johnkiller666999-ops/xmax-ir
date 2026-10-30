@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="color-scheme" content="dark">
+<title>XMax IR 后台</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:dark;--bg:#050912;--surface:#0c1528;--surface2:#111d37;--line:#1c2a4a;--text:#eaf0fb;--muted:#8e9bbd;--accent:#45c8ff;--accent2:#8b7bff;--good:#3ddc97;--bad:#ff7d8b}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--text);font:400 15px/1.6 system-ui,"PingFang SC","Microsoft YaHei",sans-serif}
+.wrap{max-width:980px;margin:0 auto;padding:28px 20px 80px}
+h1{font-size:24px;margin:0 0 4px}h2{font-size:18px;margin:0}
+.muted{color:var(--muted);font-size:13.5px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px;margin-top:18px}
+input,textarea,select{width:100%;background:var(--surface2);border:1px solid var(--line);border-radius:10px;color:var(--text);font:inherit;padding:10px 12px}
+textarea{min-height:64px;resize:vertical}
+input:focus,textarea:focus,select:focus{outline:2px solid var(--accent2);outline-offset:1px}
+label{display:block;font-size:13px;color:var(--muted);margin:12px 0 6px}
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface2);color:var(--text);border-radius:10px;padding:9px 16px;font:500 14px system-ui,sans-serif;cursor:pointer}
+.btn:hover{border-color:var(--accent)}.btn.p{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#04101f;border:0}
+.btn.s{padding:6px 10px;font-size:13px}.btn.d{color:var(--bad)}
+.btn:disabled{opacity:.45;cursor:default}
+.row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}@media(max-width:720px){.row{grid-template-columns:1fr}}
+.tabs{display:flex;gap:6px;margin-top:18px}.tabs button{border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:10px;padding:9px 16px;cursor:pointer;font:500 14px system-ui,sans-serif}
+.tabs button[aria-selected="true"]{background:var(--surface2);color:var(--text)}
+.item{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding:14px 0;border-top:1px solid var(--line)}
+.item:first-child{border-top:0}
+.item b{display:block;font-weight:600}.item .muted a{color:var(--accent);word-break:break-all}
+.acts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.bar{position:sticky;bottom:0;margin-top:18px;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:14px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.msg{font-size:14px}.ok{color:var(--good)}.err{color:var(--bad)}
+.prog{height:6px;border-radius:4px;background:var(--surface2);overflow:hidden;margin-top:8px;display:none}.prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2))}
+.tag{display:inline-block;font-size:12px;border:1px solid var(--line);border-radius:999px;padding:1px 8px;color:var(--muted);margin-left:6px}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>XMax IR 网站后台</h1>
+<div class="muted">管理"公司治理文件"和"简报资料"。点击"保存并发布"后，网站约 1 分钟内更新。</div>
+
+<div class="card" id="login">
+<h2>登录</h2>
+<label for="pw">后台密码</label>
+<input id="pw" type="password" autocomplete="current-password">
+<div style="margin-top:14px"><button class="btn p" id="loginBtn">登录</button> <span class="msg" id="loginMsg"></span></div>
+</div>
+
+<div id="app" hidden>
+<div class="tabs" role="tablist"><button role="tab" aria-selected="true" data-s="governance">公司治理文件</button><button role="tab" aria-selected="false" data-s="presentations">简报资料</button></div>
+<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h2 id="secTitle">公司治理文件</h2><button class="btn" id="addBtn">＋ 新增</button></div>
+<div id="list" style="margin-top:10px"></div></div>
+
+<div class="card" id="form" hidden>
+<h2 id="formTitle">新增</h2>
+<div class="row">
+<div><label>英文标题 *</label><input id="f_ten"></div>
+<div><label>简体中文标题 *</label><input id="f_tzhs"></div>
+<div><label>繁体中文标题（可留空，留空显示简体）</label><input id="f_tzht"></div>
+</div>
+<div id="presFields">
+<div class="row">
+<div><label>英文说明</label><textarea id="f_den"></textarea></div>
+<div><label>简体中文说明</label><textarea id="f_dzhs"></textarea></div>
+<div><label>繁体中文说明（可留空）</label><textarea id="f_dzht"></textarea></div>
+</div>
+<div class="row">
+<div><label>图标</label><select id="f_icon"><option value="deck">演示文稿</option><option value="ai">AI / 星形</option><option value="doc">文档</option><option value="download">下载</option></select></div>
+</div>
+</div>
+<label>文件</label>
+<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center"><input id="f_file" type="file" accept=".pdf,.ppt,.pptx,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg" style="flex:1;min-width:220px"><button class="btn" id="upBtn">上传文件</button></div>
+<div class="prog" id="prog"><i></i></div>
+<label>或者直接填写文件链接（上传后会自动填入）</label>
+<input id="f_url" placeholder="https://...">
+<div class="row"><div><label>按钮文字（可留空，默认"PDF"或"下载"）</label><input id="f_label" placeholder="例如 PDF、EDGAR"></div></div>
+<div class="muted" id="emptyHint" style="margin-top:8px">简报资料不填链接时，网站上会显示"准备中"。</div>
+<div style="margin-top:16px;display:flex;gap:10px"><button class="btn p" id="okBtn">确定</button><button class="btn" id="cancelBtn">取消</button><span class="msg" id="formMsg"></span></div>
+</div>
+
+<div class="bar"><span class="msg" id="saveMsg">尚未修改</span><div style="display:flex;gap:10px"><a class="btn" href="/" target="_blank" rel="noopener">查看网站 ↗</a><button class="btn p" id="saveBtn" disabled>保存并发布</button></div></div>
+</div>
+</div>
+
+<script type="module">
+let uploadFn = null;   // the upload library is loaded only when it is needed
+const $ = (s) => document.querySelector(s);
+let PW = '', DATA = null, SEC = 'governance', EDIT = -1, DIRTY = false;
+const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const uid = () => Math.random().toString(36).slice(2, 10);
+function setDirty(v) { DIRTY = v; $('#saveBtn').disabled = !v; $('#saveMsg').className = 'msg'; $('#saveMsg').textContent = v ? '有未发布的修改' : '尚未修改'; }
+addEventListener('beforeunload', (e) => { if (DIRTY) { e.preventDefault(); e.returnValue = ''; } });
+
+async function login() {
+  PW = $('#pw').value; $('#loginMsg').textContent = '检查中…'; $('#loginMsg').className = 'msg';
+  try {
+    const r = await fetch('/api/docs?check=1', { headers: { 'x-admin-password': PW } });
+    const j = await r.json();
+    if (!j.password) throw new Error('网站还没有设置后台密码（ADMIN_PASSWORD）。');
+    if (!j.ok) throw new Error('密码不正确。');
+    if (!j.storage) throw new Error('网站还没有连接文件存储（Vercel Blob）。');
+    sessionStorage.setItem('xmax-admin', PW);
+    const d = await (await fetch('/api/docs?fresh=1')).json();
+    DATA = d.data; $('#login').hidden = true; $('#app').hidden = false; render();
+  } catch (e) { $('#loginMsg').className = 'msg err'; $('#loginMsg').textContent = e.message || '登录失败'; }
+}
+$('#loginBtn').onclick = login;
+$('#pw').addEventListener('keydown', (e) => { if (e.key === 'Enter') login(); });
+const saved = sessionStorage.getItem('xmax-admin'); if (saved) { $('#pw').value = saved; login(); }
+
+document.querySelectorAll('.tabs button').forEach((b) => b.onclick = () => {
+  SEC = b.dataset.s; document.querySelectorAll('.tabs button').forEach((x) => x.setAttribute('aria-selected', x === b));
+  $('#secTitle').textContent = b.textContent; closeForm(); render();
+});
+
+function render() {
+  const arr = DATA[SEC] || [];
+  $('#list').innerHTML = arr.length ? arr.map((x, i) => `<div class="item"><div><b>${esc(x.title.zhs || x.title.en)}<span class="tag">${x.url ? esc(x.label || (SEC === 'governance' ? 'PDF' : '下载')) : '准备中'}</span></b><div class="muted">${esc(x.title.en)}${x.url ? ` · <a href="${esc(x.url)}" target="_blank" rel="noopener">打开文件</a>` : ''}</div></div>
+    <div class="acts"><button class="btn s" data-a="up" data-i="${i}" ${i === 0 ? 'disabled' : ''}>↑</button><button class="btn s" data-a="down" data-i="${i}" ${i === arr.length - 1 ? 'disabled' : ''}>↓</button><button class="btn s" data-a="edit" data-i="${i}">编辑</button><button class="btn s d" data-a="del" data-i="${i}">删除</button></div></div>`).join('')
+    : '<div class="muted" style="padding:14px 0">还没有内容，点击"新增"。</div>';
+  $('#list').querySelectorAll('button').forEach((b) => b.onclick = () => act(b.dataset.a, +b.dataset.i));
+}
+function act(a, i) {
+  const arr = DATA[SEC];
+  if (a === 'up' && i > 0) [arr[i - 1], arr[i]] = [arr[i], arr[i - 1]];
+  if (a === 'down' && i < arr.length - 1) [arr[i + 1], arr[i]] = [arr[i], arr[i + 1]];
+  if (a === 'del' && confirm('确定删除"' + (arr[i].title.zhs || arr[i].title.en) + '"？发布后网站上会移除。')) arr.splice(i, 1);
+  if (a === 'edit') return openForm(i);
+  if (a !== 'edit') setDirty(true);
+  render();
+}
+function openForm(i) {
+  EDIT = i; const x = i >= 0 ? DATA[SEC][i] : { title: {}, desc: {}, icon: 'doc', url: '', label: '' };
+  $('#formTitle').textContent = i >= 0 ? '编辑' : '新增';
+  $('#f_ten').value = x.title.en || ''; $('#f_tzhs').value = x.title.zhs || ''; $('#f_tzht').value = x.title.zht || '';
+  $('#f_den').value = (x.desc || {}).en || ''; $('#f_dzhs').value = (x.desc || {}).zhs || ''; $('#f_dzht').value = (x.desc || {}).zht || '';
+  $('#f_icon').value = x.icon || 'doc'; $('#f_url').value = x.url || ''; $('#f_label').value = x.label || ''; $('#f_file').value = '';
+  $('#presFields').hidden = SEC !== 'presentations'; $('#emptyHint').hidden = SEC !== 'presentations';
+  $('#formMsg').textContent = ''; $('#form').hidden = false; $('#form').scrollIntoView({ behavior: 'smooth' });
+}
+function closeForm() { $('#form').hidden = true; EDIT = -1; }
+$('#addBtn').onclick = () => openForm(-1);
+$('#cancelBtn').onclick = closeForm;
+
+$('#upBtn').onclick = async () => {
+  const f = $('#f_file').files[0];
+  if (!f) { $('#formMsg').className = 'msg err'; $('#formMsg').textContent = '请先选择文件'; return; }
+  $('#upBtn').disabled = true; $('#prog').style.display = 'block'; $('#prog i').style.width = '5%';
+  $('#formMsg').className = 'msg'; $('#formMsg').textContent = '上传中…';
+  try {
+    if (!uploadFn) uploadFn = (await import('https://esm.sh/@vercel/blob@2.8.2/client')).upload;
+    const safe = f.name.replace(/[^\w.\-]+/g, '-');
+    const blob = await uploadFn('docs/' + safe, f, {
+      access: 'public', handleUploadUrl: '/api/upload', clientPayload: PW, multipart: f.size > 8 * 1024 * 1024,
+      onUploadProgress: (p) => { $('#prog i').style.width = Math.max(5, p.percentage) + '%'; },
+    });
+    $('#f_url').value = blob.url; $('#prog i').style.width = '100%';
+    $('#formMsg').className = 'msg ok'; $('#formMsg').textContent = '上传成功，点"确定"后再"保存并发布"';
+  } catch (e) { $('#formMsg').className = 'msg err'; $('#formMsg').textContent = '上传失败：' + (e.message || e); }
+  $('#upBtn').disabled = false;
+};
+
+$('#okBtn').onclick = () => {
+  const ten = $('#f_ten').value.trim(), tzhs = $('#f_tzhs').value.trim();
+  if (!ten || !tzhs) { $('#formMsg').className = 'msg err'; $('#formMsg').textContent = '请填写英文标题和简体中文标题'; return; }
+  const url = $('#f_url').value.trim();
+  if (url && !/^https?:\/\//i.test(url)) { $('#formMsg').className = 'msg err'; $('#formMsg').textContent = '链接需要以 http:// 或 https:// 开头'; return; }
+  if (SEC === 'governance' && !url) { $('#formMsg').className = 'msg err'; $('#formMsg').textContent = '公司治理文件需要上传文件或填写链接'; return; }
+  const old = EDIT >= 0 ? DATA[SEC][EDIT] : null;
+  const x = { id: old ? old.id : uid(), title: { en: ten, zhs: tzhs, zht: $('#f_tzht').value.trim() }, url, label: $('#f_label').value.trim() };
+  if (SEC === 'presentations') {
+    x.icon = $('#f_icon').value; x.desc = { en: $('#f_den').value.trim(), zhs: $('#f_dzhs').value.trim(), zht: $('#f_dzht').value.trim() };
+    if (old && Number.isInteger(old.ti) && old.title.en === ten) x.ti = old.ti;   // keep built-in translations only if the English title is unchanged
+  }
+  if (EDIT >= 0) DATA[SEC][EDIT] = x; else DATA[SEC].push(x);
+  closeForm(); render(); setDirty(true);
+};
+
+$('#saveBtn').onclick = async () => {
+  $('#saveBtn').disabled = true; $('#saveMsg').className = 'msg'; $('#saveMsg').textContent = '发布中…';
+  try {
+    const r = await fetch('/api/docs', { method: 'POST', headers: { 'content-type': 'application/json', 'x-admin-password': PW }, body: JSON.stringify(DATA) });
+    const j = await r.json();
+    if (!r.ok) throw new Error(j.error === 'unauthorized' ? '密码已失效，请刷新页面重新登录' : (j.error || '发布失败'));
+    DATA = j.data; render(); DIRTY = false;
+    $('#saveMsg').className = 'msg ok'; $('#saveMsg').textContent = '已发布，网站约 1 分钟内更新';
+  } catch (e) { $('#saveMsg').className = 'msg err'; $('#saveMsg').textContent = e.message; $('#saveBtn').disabled = false; }
+};
+</script>
+</body>
+</html>
