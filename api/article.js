@@ -269,7 +269,7 @@ ${notFound ? `<h1 style="margin-top:22px">${esc(L.nf)}</h1><p class="en">${esc(L
 ${notFound ? '' : `<div class="wrap grid"><article>
 ${lang !== 'en' && L.note && body ? `<p class="note">${esc(L.note)}</p>` : ''}
 ${body ? `<div class="body">${body}</div>` : `<div class="ph"><span class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8b7bff" stroke-width="1.8" stroke-linejoin="round"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6M9 13h8M9 17h5"/></svg></span><h2>${esc(L.ftitle)}</h2><p>${esc(L.fail)}</p><a class="btn p" href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">${esc(L.view)} ↗</a></div>`}
-<div class="ct"><p>${esc(L.ctLead)}</p><p>${esc(L.ctIR)}<br>XMax Inc.<br>${esc(L.ctMail)}: <a href="mailto:IR@XMax.com">IR@XMax.com</a></p></div>
+<div class="ct"><p>${esc(L.ctLead)}</p><p>${esc(L.ctIR)}<br>XMax Inc.<br>${esc(L.ctMail)}: <a href="mailto:IR@XMax.com">IR@XMax.com</a> / <a href="mailto:XmaxIR@icrinc.com">XmaxIR@icrinc.com</a></p></div>
 <div class="pnr">${card(prev, '← ' + L.prev)}${card(next, L.next + ' →')}</div>
 <p class="disc">${esc(L.disclaimer)}</p>
 </article>
